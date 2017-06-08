@@ -5,3 +5,6 @@
 # Source files
 *.js text eol=crlf
 *.ts text eol=crlf
+
+# Binary files
+*.doc binary

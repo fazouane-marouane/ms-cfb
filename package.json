@@ -2,8 +2,9 @@
   "name": "@practical/cfb",
   "version": "1.0.0",
   "description": "A complete implementation of MS-CFB",
-  "main": "index.js",
   "scripts": {
+    "start": "node build/runExample.js examples/dummy.doc",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -31,6 +32,7 @@
   },
   "homepage": "https://github.com/practicaljs/cfb#readme",
   "dependencies": {
-    "@types/node": "^7.0.29"
+    "@types/node": "^7.0.29",
+    "typescript": "^2.3.4"
   }
 }

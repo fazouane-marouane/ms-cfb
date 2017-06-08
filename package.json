@@ -1,0 +1,36 @@
+{
+  "name": "@practical/cfb",
+  "version": "1.0.0",
+  "description": "A complete implementation of MS-CFB",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/practicaljs/cfb.git"
+  },
+  "keywords": [
+    "cfb",
+    "cfbf",
+    "cdf",
+    "ms-cfb",
+    "ms-cfbf",
+    "compound file",
+    "composite file",
+    "compound file binary format",
+    "doc",
+    "xls",
+    "msg",
+    "oft"
+  ],
+  "author": "Fazouane Marouane",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/practicaljs/cfb/issues"
+  },
+  "homepage": "https://github.com/practicaljs/cfb#readme",
+  "dependencies": {
+    "@types/node": "^7.0.29"
+  }
+}

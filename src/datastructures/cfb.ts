@@ -1,5 +1,6 @@
 import { Header } from './header'
 import { FatChain } from './fatCHain'
+import { DirectoryEntries } from './directoryEntries'
 import { HeaderView, SectorView, DifatSectorView, FatSectorView, ChainView } from './dataViews'
 import { SectorType } from './enums'
 
@@ -11,7 +12,7 @@ export class CFB {
     }
     this.buildSectors()
     this.buildFatSectors()
-    this.buildDirectoryEntriesArray()
+    this.buildDirectoryEntries()
     this.buildMiniFatSectors()
   }
 
@@ -56,13 +57,13 @@ export class CFB {
       .filter(sectorNumber => sectorNumber <= SectorType.MAXREGSECT)
   }
 
-  public buildDirectoryEntriesArray() {
+  public buildDirectoryEntries() {
     let startOfDirectoryChain = this.header.startOfDirectoryChain
     if(startOfDirectoryChain !== SectorType.ENDOFCHAIN) {
       if(!this.fatChain.chains.has(startOfDirectoryChain)) {
         throw new Error(`Directory chain sector not found. It was supposed to be available at ${startOfDirectoryChain}.`)
       }
-      this.directoryEntryArray = this.fatChain.chains.get(startOfDirectoryChain)!
+      this.directoryEntries = new DirectoryEntries(this.fatChain.chains.get(startOfDirectoryChain)!)
     }
   }
 
@@ -86,5 +87,5 @@ export class CFB {
 
   public miniFat: ChainView
 
-  public directoryEntryArray: ChainView
+  public directoryEntries: DirectoryEntries
 }

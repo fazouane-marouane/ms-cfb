@@ -18,3 +18,6 @@ console.log('number of chains', cfb.fatChain.chains.size)
 cfb.fatChain.chains.forEach((chain, startIndex) =>{
   console.log(`startIndex ${startIndex}, byteLength ${chain.buffer.byteLength}`)
 })
+cfb.directoryEntries.entries.forEach((entry, index) =>{
+  console.log(`directory entry ${index}. name ${entry.name}`)
+})

@@ -1,4 +1,4 @@
 export class SectorView {
-  constructor(protected buffer: ArrayBuffer) {
+  constructor(public buffer: ArrayBuffer) {
   }
 }

@@ -1,2 +1,5 @@
 export { HeaderView } from './headerView'
 export { SectorView } from './sectorView'
+export { DifatSectorView } from './difatSectorView'
+export { FatSectorView } from './fatSectorView'
+export { ChainView } from './chainView'

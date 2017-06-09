@@ -1,6 +1,6 @@
 import { Header } from './header'
 import { FatChain } from './fatCHain'
-import { HeaderView, SectorView, DifatSectorView, FatSectorView } from './dataViews'
+import { HeaderView, SectorView, DifatSectorView, FatSectorView, ChainView } from './dataViews'
 import { SectorType } from './enums'
 
 export class CFB {
@@ -9,16 +9,24 @@ export class CFB {
     if (!this.header.check()) {
       throw new Error('bad format.')
     }
+    this.buildSectors()
+    this.buildFatSectors()
+    this.buildDirectoryEntriesArray()
+    this.buildMiniFatSectors()
+  }
+
+  public buildSectors() {
     let sectorSize = this.header.sectorSize
     let nthSectorStart = (index: number) => sectorSize * (index + 1)
-    let slicedBuffer = (index: number) => buffer.slice(nthSectorStart(index), nthSectorStart(index + 1))
-    let numberOfSectors = buffer.byteLength / sectorSize - 1
+    let slicedBuffer = (index: number) => this.buffer.slice(nthSectorStart(index), nthSectorStart(index + 1))
+    let numberOfSectors = this.buffer.byteLength / sectorSize - 1
     this.sectors = Array.from(Array(numberOfSectors).keys())
       .map(index => new SectorView(slicedBuffer(index)))
-    // Let's build difat & fat chains
+  }
+
+  public buildFatSectors() {
     let visitedSectors = new Set<number>()
-    this.fatSectorIndices = this.buildDifat(visitedSectors)
-    this.fatSectors = this.fatSectorIndices
+    this.fatSectors = this.getDifatArray(visitedSectors)
       .map(sectorNumber => {
         if(visitedSectors.has(sectorNumber)) {
           throw new Error(`sector ${sectorNumber}'s already been visited.`)
@@ -29,7 +37,7 @@ export class CFB {
     this.fatChain = new FatChain(this.fatSectors, this.sectors)
   }
 
-  public buildDifat(visitedSectors: Set<number>): number[] {
+  private getDifatArray(visitedSectors: Set<number>): number[] {
     let result = this.header.initialDifat
     let currentIndex = this.header.startOfDifat
     while(currentIndex !== SectorType.ENDOFCHAIN) {
@@ -48,15 +56,35 @@ export class CFB {
       .filter(sectorNumber => sectorNumber <= SectorType.MAXREGSECT)
   }
 
+  public buildDirectoryEntriesArray() {
+    let startOfDirectoryChain = this.header.startOfDirectoryChain
+    if(startOfDirectoryChain !== SectorType.ENDOFCHAIN) {
+      if(!this.fatChain.chains.has(startOfDirectoryChain)) {
+        throw new Error(`Directory chain sector not found. It was supposed to be available at ${startOfDirectoryChain}.`)
+      }
+      this.directoryEntryArray = this.fatChain.chains.get(startOfDirectoryChain)!
+    }
+  }
+
+  public buildMiniFatSectors() {
+    let startOfMiniFat = this.header.startOfMiniFat
+    if(startOfMiniFat !== SectorType.ENDOFCHAIN) {
+      if(!this.fatChain.chains.has(startOfMiniFat)) {
+        throw new Error(`MiniFAT sector not found. It was supposed to be available at ${startOfMiniFat}.`)
+      }
+      this.miniFat = this.fatChain.chains.get(startOfMiniFat)!
+    }
+  }
+
   public header: Header
 
   public sectors: SectorView[]
 
-  public fatSectorIndices: number[]
-
-  public freeFatSectorIndices: number[]
-
   public fatSectors: FatSectorView[]
 
   public fatChain: FatChain
+
+  public miniFat: ChainView
+
+  public directoryEntryArray: ChainView
 }

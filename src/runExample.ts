@@ -8,11 +8,11 @@ let sectors = cfb.sectors
 console.log('signature', header.headerSignature)
 console.log('version', header.version)
 console.log('bytesOrder', header.bytesOrder)
+console.log('start of directoryChain', header.startOfDirectoryChain)
 console.log('start of minifat', header.startOfMiniFat)
 console.log('start of difat', header.startOfDifat)
 console.log('sector size', header.sectorSize)
 console.log('number of fat sectors', header.numberOfFatSectors)
-console.log('fatSectors', cfb.fatSectorIndices)
 console.log('number of sectors', sectors.length)
 console.log('number of chains', cfb.fatChain.chains.size)
 cfb.fatChain.chains.forEach((chain, startIndex) =>{

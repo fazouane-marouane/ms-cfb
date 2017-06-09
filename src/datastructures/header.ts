@@ -55,6 +55,10 @@ export class Header {
     return this.headerView.difatChainStart[0]
   }
 
+  public get startOfDirectoryChain(): number {
+    return this.headerView.directoryChainStartView[0]
+  }
+
   public get initialDifat(): number[] {
     return Array.from(this.headerView.initialDifatChain.values())
   }

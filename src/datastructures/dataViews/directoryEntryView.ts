@@ -54,6 +54,10 @@ export class DirectoryEntryView {
     return this.childIdView[0]
   }
 
+  public get objectType(): number {
+    return this.objectTypeView[0]
+  }
+
   public directoryEntryNameView: Uint16Array
 
   public directoryEntryNameLengthView: Uint16Array

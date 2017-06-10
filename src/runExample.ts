@@ -57,3 +57,5 @@ cfb.directoryEntries.entries.forEach((entry, index) => {
     leftpad(ignoreSpecialValues(entry.rightSiblingId), 8),
     leftpad(ignoreSpecialValues(entry.childId), 8)].join('\t'))
 })
+
+console.log('directories', cfb.root)

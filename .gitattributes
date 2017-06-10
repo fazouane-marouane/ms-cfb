@@ -1,10 +1,10 @@
 # Config & Documentation
 *.md text eol=crlf
 *.json text eol=crlf
-
 # Source files
 *.js text eol=crlf
 *.ts text eol=crlf
-
 # Binary files
-*.doc binary
+*.doc filter=lfs diff=lfs merge=lfs -text
+*.msg filter=lfs diff=lfs merge=lfs -text
+*.oft filter=lfs diff=lfs merge=lfs -text

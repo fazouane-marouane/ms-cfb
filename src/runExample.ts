@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs'
 import { readFileFromBuffer } from './readers/readFile'
+import { SectorType } from './datastructures/enums'
 
 let buffer = readFileSync(process.argv[2])
 let cfb = readFileFromBuffer(buffer)
@@ -18,6 +19,7 @@ console.log('number of chains', cfb.fatChain.chains.size)
 cfb.fatChain.chains.forEach((chain, startIndex) => {
   console.log(`startIndex ${startIndex}, byteLength ${chain.buffer.byteLength}`)
 })
+
 function leftpad (str: string, len: number) {
   str = String(str);
   let i = -1;
@@ -39,13 +41,19 @@ function rightpad (str: string, len: number) {
   return str;
 }
 
+function ignoreSpecialValues(value: number): string {
+  return value <= SectorType.MAXREGSECT? value.toString(): '-'
+}
+
 console.log('Directory entries')
-console.log(['index', 'name', 'sector', 'size', 'leftId', 'rightId', 'childId'].join('\t'))
+console.log(['index', rightpad('name', 32), 'sector', 'size',
+  rightpad('leftId', 8), rightpad('rightId', 8), rightpad('childId', 8)].join('\t'))
 cfb.directoryEntries.entries.forEach((entry, index) => {
   console.log([index,
-    rightpad(entry.name, 27),
-    entry.startingSectorLocation, entry.streamSize,
-    leftpad(entry.leftSiblingId.toString(16), 8),
-    leftpad(entry.rightSiblingId.toString(16), 8),
-    leftpad(entry.childId.toString(16), 8)].join('\t'))
+    rightpad(entry.name, 32),
+    ignoreSpecialValues(entry.startingSectorLocation),
+    entry.streamSize,
+    leftpad(ignoreSpecialValues(entry.leftSiblingId), 8),
+    leftpad(ignoreSpecialValues(entry.rightSiblingId), 8),
+    leftpad(ignoreSpecialValues(entry.childId), 8)].join('\t'))
 })

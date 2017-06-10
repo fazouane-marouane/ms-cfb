@@ -49,7 +49,7 @@ export class CFB {
         throw new Error(`sector ${currentIndex}'s already been visited.`)
       }
       let difatSector = new DifatSectorView(this.sectors[currentIndex])
-      result.concat(difatSector.partialDifatArray)
+      result.push(...difatSector.partialDifatArray)
       visitedSectors.add(currentIndex)
       currentIndex = difatSector.nextDifatSectorIndex
     }

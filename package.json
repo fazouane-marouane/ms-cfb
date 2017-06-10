@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A complete implementation of MS-CFB",
   "scripts": {
-    "start": "node build/runExample.js examples/dummy.doc",
+    "start": "node build/runExample.js examples/template.oft",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

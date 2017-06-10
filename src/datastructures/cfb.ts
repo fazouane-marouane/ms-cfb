@@ -2,7 +2,8 @@ import { Header } from './header'
 import { FatChain } from './fatCHain'
 import { DirectoryEntries } from './directoryEntries'
 import { HeaderView, SectorView, DifatSectorView, FatSectorView, ChainView } from './dataViews'
-import { SectorType } from './enums'
+import { SectorType, ObjectType, StreamType } from './enums'
+import { Directory } from './directory'
 
 export class CFB {
   constructor(private buffer: ArrayBuffer) {
@@ -14,6 +15,7 @@ export class CFB {
     this.buildFatSectors()
     this.buildDirectoryEntries()
     this.buildMiniFatSectors()
+    this.buildDirectoryHierarchy()
   }
 
   public buildSectors() {
@@ -73,8 +75,68 @@ export class CFB {
       if(!this.fatChain.chains.has(startOfMiniFat)) {
         throw new Error(`MiniFAT sector not found. It was supposed to be available at ${startOfMiniFat}.`)
       }
-      this.miniFat = this.fatChain.chains.get(startOfMiniFat)!
+      let miniFatView = this.fatChain.chains.get(startOfMiniFat)!
+      let miniStreamView = this.fatChain.chains.get(this.directoryEntries.entries[0].startingSectorLocation)!
+      console.log('miniStreamView', miniStreamView)
+      let sectorSize = this.header.miniSectorSize
+      let nthSectorStart = (index: number) => sectorSize * index
+      let slicedBuffer = (index: number) => miniStreamView.buffer.slice(nthSectorStart(index), nthSectorStart(index + 1))
+      let numberOfSectors = miniStreamView.buffer.byteLength / sectorSize
+      let miniStreamSectors = Array.from(Array(numberOfSectors).keys())
+        .map(index => new SectorView(slicedBuffer(index)))
+      console.log('miniStreamSectors', miniStreamSectors.length)
+      this.miniFatChain = new FatChain([new FatSectorView(miniFatView)], miniStreamSectors)
     }
+  }
+
+  public buildDirectoryHierarchy() {
+    let directories = new Map<number, Directory>()
+    let children = new Map<number, number[]>()
+    this.directoryEntries.entries.forEach((entry, index) => {
+      if (entry.objectType !== ObjectType.STREAM) {
+        directories.set(index, {})
+        let currentChildren: number[] = []
+        let toExplore: number[] = [entry.childId]
+        while (toExplore.length > 0) {
+          let currentIndex = toExplore.pop()!
+          currentChildren.push(currentIndex)
+          let currentEntry = this.directoryEntries.entries[currentIndex]
+          if (currentEntry.leftSiblingId !== StreamType.NOSTREAM) {
+            toExplore.push(currentEntry.leftSiblingId)
+          }
+          if (currentEntry.rightSiblingId !== StreamType.NOSTREAM) {
+            toExplore.push(currentEntry.rightSiblingId)
+          }
+        }
+        children.set(index, currentChildren)
+      }
+    })
+    let toExplore = [0]
+    while (toExplore.length > 0) {
+      let currentDirectoryIndex = toExplore.pop()!
+      let currentDirectory = directories.get(currentDirectoryIndex)!
+      for(let childId of children.get(currentDirectoryIndex)!) {
+        let child = this.directoryEntries.entries[childId]
+        if (child.objectType !== ObjectType.STREAM) {
+          currentDirectory[child.name] = directories.get(childId)!
+          toExplore.push(childId)
+        }
+        else {
+          let chains = this.fatChain.chains
+          if(child.streamSize <= this.header.miniSectorCutoff) {
+            chains = this.miniFatChain.chains
+          }
+          let sectorId = child.startingSectorLocation
+          if(sectorId <= SectorType.MAXREGSECT) {
+            currentDirectory[child.name] = chains.get(sectorId)!.buffer.slice(0, child.streamSize)
+          }
+          else {
+            currentDirectory[child.name] = new Uint8Array(0).buffer
+          }
+        }
+      }
+    }
+    this.root = directories.get(0)!
   }
 
   public header: Header
@@ -85,7 +147,9 @@ export class CFB {
 
   public fatChain: FatChain
 
-  public miniFat: ChainView
+  public miniFatChain: FatChain
 
   public directoryEntries: DirectoryEntries
+
+  public root: Directory
 }

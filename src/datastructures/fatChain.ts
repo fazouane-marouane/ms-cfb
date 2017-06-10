@@ -16,6 +16,7 @@ export class FatChain {
     let chainsHeadNodes = new Map<number, LinkedChainNode>()
     let partialFatArrays = this.fatSectors.map(fatSector => fatSector.partialFatArray)
     let completeFatArray: number[] = Array.prototype.concat(...partialFatArrays)
+
     completeFatArray.forEach((nextIndex, currentIndex) => {
       if (nextIndex <= SectorType.MAXREGSECT || nextIndex === SectorType.ENDOFCHAIN) {
         let nextNode: LinkedChainNode | null = null

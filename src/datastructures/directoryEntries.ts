@@ -9,7 +9,7 @@ export class DirectoryEntries {
     let slicedBuffer = (index: number) => buffer.slice(nthEntryStart(index), nthEntryStart(index + 1))
     this.entries = Array.from(Array(numberOfEntries).keys())
       .map(index => new DirectoryEntryView(slicedBuffer(index)))
-      .filter(entry => entry.streamSize)
+      .filter(entry => entry.nameLength)
   }
 
   public entries: DirectoryEntryView[]

@@ -17,11 +17,21 @@ export class DirectoryEntryView {
     this.streamSizeView = new Uint32Array(this.buffer, 0x78, 2) // 4 * 2 = 8 bytes
   }
 
+  public check(): boolean {
+    let chars = Array.from(this.directoryEntryNameView.values())
+    return ((this.directoryEntryNameLengthView[0] % 2 === 0) &&
+      chars.indexOf(0) === this.directoryEntryNameLengthView[0] / 2)
+  }
+
   public get name(): string {
     let chars = Array.from(this.directoryEntryNameView.values())
     let zeroIndex = chars.indexOf(0)
     chars.splice(zeroIndex, 32)
     return String.fromCodePoint(...chars)
+  }
+
+  public get nameLength(): number {
+    return this.directoryEntryNameLengthView[0]/2
   }
 
   public get startingSectorLocation(): number {

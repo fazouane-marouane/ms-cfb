@@ -35,6 +35,7 @@ export class FatChain {
         }
         else {
           currentNode = new LinkedChainNode(currentIndex, nextNode)
+          chainsNodes.set(currentIndex, currentNode)
           chainsHeadNodes.set(currentIndex, currentNode)
         }
       }

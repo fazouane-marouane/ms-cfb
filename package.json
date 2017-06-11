@@ -1,7 +1,8 @@
 {
-  "name": "@practical/cfb",
+  "name": "@practical/ms-cfb",
   "version": "1.0.0",
   "description": "A complete implementation of MS-CFB",
+  "main": "build/index.js",
   "scripts": {
     "start": "node build/runExample.js examples/template.oft",
     "build": "tsc",
@@ -31,8 +32,11 @@
     "url": "https://github.com/practicaljs/cfb/issues"
   },
   "homepage": "https://github.com/practicaljs/cfb#readme",
-  "dependencies": {
+  "devDependencies": {
     "@types/node": "^7.0.29",
     "typescript": "^2.3.4"
-  }
+  },
+  "files":[
+    "./build"
+  ]
 }

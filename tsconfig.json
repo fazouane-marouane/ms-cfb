@@ -12,5 +12,6 @@
       "dom"
     ],
     "typeRoots" : ["./node_modules/@types/"]
-  }
+  },
+  "compileOnSave": false
 }

@@ -4,6 +4,7 @@ import { DirectoryEntries } from './directoryEntries'
 import { HeaderView, SectorView, DifatSectorView, FatSectorView, ChainView } from './dataViews'
 import { SectorType, ObjectType, StreamType } from './enums'
 import { Directory } from './directory'
+import { chunkBuffer } from '../helpers'
 
 export class CFB {
   constructor(private buffer: ArrayBuffer) {
@@ -20,11 +21,8 @@ export class CFB {
 
   public buildSectors() {
     let sectorSize = this.header.sectorSize
-    let nthSectorStart = (index: number) => sectorSize * (index + 1)
-    let slicedBuffer = (index: number) => this.buffer.slice(nthSectorStart(index), nthSectorStart(index + 1))
-    let numberOfSectors = this.buffer.byteLength / sectorSize - 1
-    this.sectors = Array.from(Array(numberOfSectors).keys())
-      .map(index => new SectorView(slicedBuffer(index)))
+    this.sectors = chunkBuffer(this.buffer.slice(sectorSize), sectorSize)
+      .map(chunk => new SectorView(chunk))
   }
 
   public buildFatSectors() {
@@ -78,11 +76,8 @@ export class CFB {
       let miniFatView = this.fatChain.chains.get(startOfMiniFat)!
       let miniStreamView = this.fatChain.chains.get(this.directoryEntries.entries[0].startingSectorLocation)!
       let sectorSize = this.header.miniSectorSize
-      let nthSectorStart = (index: number) => sectorSize * index
-      let slicedBuffer = (index: number) => miniStreamView.buffer.slice(nthSectorStart(index), nthSectorStart(index + 1))
-      let numberOfSectors = miniStreamView.buffer.byteLength / sectorSize
-      let miniStreamSectors = Array.from(Array(numberOfSectors).keys())
-        .map(index => new SectorView(slicedBuffer(index)))
+      let miniStreamSectors = chunkBuffer(miniStreamView.buffer, sectorSize)
+        .map(chunk => new SectorView(chunk))
       this.miniFatChain = new FatChain([new FatSectorView(miniFatView)], miniStreamSectors)
     }
   }
@@ -92,7 +87,7 @@ export class CFB {
     let children = new Map<number, number[]>()
     this.directoryEntries.entries.forEach((entry, index) => {
       if (entry.objectType !== ObjectType.STREAM) {
-        directories.set(index, {})
+        directories.set(index, new Directory)
         let currentChildren: number[] = []
         let toExplore: number[] = [entry.childId]
         while (toExplore.length > 0) {
@@ -116,7 +111,7 @@ export class CFB {
       for(let childId of children.get(currentDirectoryIndex)!) {
         let child = this.directoryEntries.entries[childId]
         if (child.objectType !== ObjectType.STREAM) {
-          currentDirectory[child.name] = directories.get(childId)!
+          currentDirectory.subdirectories[child.name] = directories.get(childId)!
           toExplore.push(childId)
         }
         else {
@@ -126,10 +121,10 @@ export class CFB {
           }
           let sectorId = child.startingSectorLocation
           if(sectorId <= SectorType.MAXREGSECT) {
-            currentDirectory[child.name] = chains.get(sectorId)!.buffer.slice(0, child.streamSize)
+            currentDirectory.files[child.name] = chains.get(sectorId)!.buffer.slice(0, child.streamSize)
           }
           else {
-            currentDirectory[child.name] = new Uint8Array(0).buffer
+            currentDirectory.files[child.name] = new Uint8Array(0).buffer
           }
         }
       }

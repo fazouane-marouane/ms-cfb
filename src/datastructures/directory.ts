@@ -1,4 +1,14 @@
+export class Directory {
+  constructor() {
+    this.subdirectories = {}
+    this.files = {}
+  }
 
-export interface Directory {
-  [name: string]: ArrayBuffer | Directory
+  subdirectories: {
+    [name: string]: Directory
+  }
+
+  files: {
+    [name: string]: ArrayBuffer
+  }
 }

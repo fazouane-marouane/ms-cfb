@@ -121,7 +121,7 @@ export class CFB {
         }
         else {
           let chains = this.fatChain.chains
-          if(child.streamSize <= this.header.miniSectorCutoff) {
+          if(child.streamSize < this.header.miniSectorCutoff) {
             chains = this.miniFatChain.chains
           }
           let sectorId = child.startingSectorLocation

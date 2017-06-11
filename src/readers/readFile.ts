@@ -1,6 +1,10 @@
 import { CFB } from '../datastructures/cfb'
 
-export function readFileFromBlob(file: Blob): Promise<CFB> {
+export function readFromArrayBuffer(buffer: ArrayBuffer): CFB {
+  return new CFB(buffer)
+}
+
+export function readFromBlob(file: Blob): Promise<CFB> {
   var arrayBufferPromise = new Promise<ArrayBuffer>((resolve, reject) => {
     var reader = new FileReader()
     reader.onload = (event: any) => {
@@ -14,9 +18,9 @@ export function readFileFromBlob(file: Blob): Promise<CFB> {
     reader.readAsArrayBuffer(file)
   })
   // read the header
-  return arrayBufferPromise.then(arrayBuffer => new CFB(arrayBuffer))
+  return arrayBufferPromise.then(arrayBuffer => readFromArrayBuffer(arrayBuffer))
 }
 
-export function readFileFromBuffer(file: Buffer): CFB {
-  return new CFB(file.buffer)
+export function readFromNodeBuffer(file: Buffer): CFB {
+  return readFromArrayBuffer(file.buffer)
 }

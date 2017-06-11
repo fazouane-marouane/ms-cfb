@@ -1,0 +1,38 @@
+<% var item, key %>
+
+<% htmlWebpackPlugin.options.appMountIds = htmlWebpackPlugin.options.appMountIds || [] %>
+<% htmlWebpackPlugin.options.links = htmlWebpackPlugin.options.links || [] %>
+<% htmlWebpackPlugin.options.meta = htmlWebpackPlugin.options.meta || [] %>
+<% htmlWebpackPlugin.options.scripts = htmlWebpackPlugin.options.scripts || [] %>
+
+<!DOCTYPE html>
+<!--[if lt IE 7 ]>             <html class="ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]>                <html class="ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]>                <html class="ie8" lang="en"> <![endif]-->
+<!--[if IE 9 ]>                <html class="ie9" lang="en"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--><html lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<meta content="ie=edge" http-equiv="x-ua-compatible">
+<title>Webpack App</title>
+<meta content="width=device-width,initial-scale=1" name="viewport">
+</head>
+<body>
+<div id="root">
+    <input type="file" id="input" onchange="handleFiles(this)" />
+</div>
+    <% for (key in htmlWebpackPlugin.files.chunks) { %>
+    <script src="<%= htmlWebpackPlugin.files.chunks[key].entry %>" type="text/javascript"></script>
+    <% } %>
+    <script type="text/javascript">
+    function handleFiles(element) {
+        for (var i = 0; i < element.files.length; i++) {
+            var file = element.files.item(i)
+            msCFB.readFromBlob(file).then(function(cfb) {
+                console.log(file.name, cfb.root)
+            })
+        }
+    }
+    </script>
+</body>
+</html>

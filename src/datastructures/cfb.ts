@@ -77,14 +77,12 @@ export class CFB {
       }
       let miniFatView = this.fatChain.chains.get(startOfMiniFat)!
       let miniStreamView = this.fatChain.chains.get(this.directoryEntries.entries[0].startingSectorLocation)!
-      console.log('miniStreamView', miniStreamView)
       let sectorSize = this.header.miniSectorSize
       let nthSectorStart = (index: number) => sectorSize * index
       let slicedBuffer = (index: number) => miniStreamView.buffer.slice(nthSectorStart(index), nthSectorStart(index + 1))
       let numberOfSectors = miniStreamView.buffer.byteLength / sectorSize
       let miniStreamSectors = Array.from(Array(numberOfSectors).keys())
         .map(index => new SectorView(slicedBuffer(index)))
-      console.log('miniStreamSectors', miniStreamSectors.length)
       this.miniFatChain = new FatChain([new FatSectorView(miniFatView)], miniStreamSectors)
     }
   }

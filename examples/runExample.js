@@ -1,9 +1,8 @@
-import { readFileSync } from 'fs'
-import { readFileFromBuffer } from './readers/readFile'
-import { SectorType } from './datastructures/enums'
+let readFileSync = require('fs').readFileSync
+let readFromNodeBuffer = require('..').readFromNodeBuffer
 
 let buffer = readFileSync(process.argv[2])
-let cfb = readFileFromBuffer(buffer)
+let cfb = readFromNodeBuffer(buffer)
 let header = cfb.header
 let sectors = cfb.sectors
 console.log('signature', header.headerSignature)
@@ -20,7 +19,7 @@ cfb.fatChain.chains.forEach((chain, startIndex) => {
   console.log(`startIndex ${startIndex}, byteLength ${chain.buffer.byteLength}`)
 })
 
-function leftpad (str: string, len: number) {
+function leftpad (str, len) {
   str = String(str);
   let i = -1;
   let ch = ' ';
@@ -30,7 +29,7 @@ function leftpad (str: string, len: number) {
   }
   return str;
 }
-function rightpad (str: string, len: number) {
+function rightpad (str, len) {
   str = String(str);
   let i = -1;
   let ch = ' ';
@@ -41,8 +40,8 @@ function rightpad (str: string, len: number) {
   return str;
 }
 
-function ignoreSpecialValues(value: number): string {
-  return value <= SectorType.MAXREGSECT? value.toString(): '-'
+function ignoreSpecialValues(value) {
+  return value <= 0xFFFFFFFA? value.toString(): '-'
 }
 
 console.log('Directory entries')

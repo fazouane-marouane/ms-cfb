@@ -41,7 +41,7 @@
   },
   "scripts": {
     "start": "node examples/runExample.js examples/dummy.doc examples/message.msg examples/template.oft",
-    "startWeb": "neutrino start",
+    "livereload": "neutrino start",
     "build": "npm-run-all --parallel build:bundle build:es2015",
     "build:bundle": "neutrino build",
     "build:es2015": "tsc --outDir ./build --module es2015 --declaration true",

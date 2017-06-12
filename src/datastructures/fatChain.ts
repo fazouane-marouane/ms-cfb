@@ -1,13 +1,14 @@
-import { FatSectorView, SectorView, ChainView } from './dataViews'
+import { FatSectorView } from './dataViews'
 import { SectorType } from './enums'
+import { joinBuffers } from '../helpers'
 
 export class FatChain {
-  constructor(private fatSectors: FatSectorView[], private sectors: SectorView[]) {
-    this.chains = new Map<number, ChainView>()
+  constructor(private fatSectors: FatSectorView[], private sectors: ArrayBuffer[]) {
+    this.chains = new Map<number, ArrayBuffer>()
     this.buildChains()
       .forEach(chainIndices => {
         let sectorsChain = chainIndices.map(index => sectors[index])
-        this.chains.set(chainIndices[0], new ChainView(sectorsChain))
+        this.chains.set(chainIndices[0], joinBuffers(sectorsChain))
       })
   }
 
@@ -44,7 +45,7 @@ export class FatChain {
     return Array.from(chainsHeadNodes.values()).map(linkedList => linkedList.toArray())
   }
 
-  public chains: Map<number, ChainView>
+  public chains: Map<number, ArrayBuffer>
 }
 
 class LinkedChainNode {

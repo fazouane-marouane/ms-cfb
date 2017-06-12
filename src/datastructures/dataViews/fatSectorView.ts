@@ -1,8 +1,6 @@
-import { SectorView } from './sectorView'
-
 export class FatSectorView {
-  constructor(sector: SectorView) {
-    this.partialArrayView = new Uint32Array(sector.buffer)
+  constructor(buffer: ArrayBuffer) {
+    this.partialArrayView = new Uint32Array(buffer)
   }
 
   public get partialArray(): number[] {

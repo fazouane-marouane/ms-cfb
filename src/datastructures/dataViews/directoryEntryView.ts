@@ -1,20 +1,20 @@
 import {} from '../enums'
 
 export class DirectoryEntryView {
-  constructor(private buffer: ArrayBuffer) {
-    this.directoryEntryNameView = new Uint16Array(this.buffer, 0x00, 32) // 2 * 32 = 64 bytes
-    this.directoryEntryNameLengthView = new Uint16Array(this.buffer, 0x40, 1) // 2 * 1 = 2 bytes
-    this.objectTypeView = new Uint8Array(this.buffer, 0x42, 1) // 1 * 1 = 1 byte
-    this.flagColorView = new Uint8Array(this.buffer, 0x43, 1) // 1 * 1 = 1 byte
-    this.leftSiblingIdView = new Uint32Array(this.buffer, 0x44, 1) // 4 * 1 = 4 bytes
-    this.rightSiblingIdView = new Uint32Array(this.buffer, 0x48, 1) // 4 * 1 = 4 bytes
-    this.childIdView = new Uint32Array(this.buffer, 0x4C, 1) // 4 * 1 = 4 bytes
-    this.clsidView = new Uint32Array(this.buffer, 0x50, 4) // 4 * 4 = 16 bytes
-    this.stateBitsView = new Uint32Array(this.buffer, 0x60, 1) // 4 * 1 = 4 bytes
-    this.creationTimeView = new Uint8Array(this.buffer, 0x64, 8) // 1 * 8 = 8 bytes
-    this.modificationTimeView = new Uint8Array(this.buffer, 0x6C, 8) // 1 * 8 = 8 bytes
-    this.startingSectorLocationView = new Uint32Array(this.buffer, 0x74, 1) // 4 * 1 = 4 bytes
-    this.streamSizeView = new Uint32Array(this.buffer, 0x78, 2) // 4 * 2 = 8 bytes
+  constructor(buffer: ArrayBuffer) {
+    this.directoryEntryNameView = new Uint16Array(buffer, 0x00, 32) // 2 * 32 = 64 bytes
+    this.directoryEntryNameLengthView = new Uint16Array(buffer, 0x40, 1) // 2 * 1 = 2 bytes
+    this.objectTypeView = new Uint8Array(buffer, 0x42, 1) // 1 * 1 = 1 byte
+    this.flagColorView = new Uint8Array(buffer, 0x43, 1) // 1 * 1 = 1 byte
+    this.leftSiblingIdView = new Uint32Array(buffer, 0x44, 1) // 4 * 1 = 4 bytes
+    this.rightSiblingIdView = new Uint32Array(buffer, 0x48, 1) // 4 * 1 = 4 bytes
+    this.childIdView = new Uint32Array(buffer, 0x4C, 1) // 4 * 1 = 4 bytes
+    this.clsidView = new Uint32Array(buffer, 0x50, 4) // 4 * 4 = 16 bytes
+    this.stateBitsView = new Uint32Array(buffer, 0x60, 1) // 4 * 1 = 4 bytes
+    this.creationTimeView = new Uint8Array(buffer, 0x64, 8) // 1 * 8 = 8 bytes
+    this.modificationTimeView = new Uint8Array(buffer, 0x6C, 8) // 1 * 8 = 8 bytes
+    this.startingSectorLocationView = new Uint32Array(buffer, 0x74, 1) // 4 * 1 = 4 bytes
+    this.streamSizeView = new Uint32Array(buffer, 0x78, 2) // 4 * 2 = 8 bytes
   }
 
   public check(): boolean {

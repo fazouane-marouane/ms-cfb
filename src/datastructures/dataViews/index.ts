@@ -1,6 +1,4 @@
 export * from './headerView'
-export * from './sectorView'
 export * from './difatSectorView'
 export * from './fatSectorView'
-export * from './chainView'
 export * from './directoryEntryView'

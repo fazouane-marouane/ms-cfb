@@ -23,8 +23,8 @@ function processFile(filename) {
   console.log('number of fat sectors', header.numberOfFatSectors)
   console.log('number of sectors', sectors.length)
   console.log('number of chains', cfb.fatChain.chains.size)
-  cfb.fatChain.chains.forEach((chain, startIndex) => {
-    console.log(`startIndex ${startIndex}, byteLength ${chain.buffer.byteLength}`)
+  cfb.fatChain.chains.forEach((buffer, startIndex) => {
+    console.log(`startIndex ${startIndex}, byteLength ${buffer.byteLength}`)
   })
 
   function leftpad(str, len) {

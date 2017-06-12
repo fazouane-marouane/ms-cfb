@@ -1,7 +1,7 @@
 import { SectorType } from '../enums'
 
 export class HeaderView {
-  constructor(public buffer: ArrayBuffer) {
+  constructor(private buffer: ArrayBuffer) {
     // Header
     this.headerSignatureView = new Uint8Array(this.buffer, 0x00, 8) // 1 * 8 = 8 bytes
     // Clsid

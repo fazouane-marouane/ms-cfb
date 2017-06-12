@@ -1,7 +1,7 @@
 import { Header } from './header'
 import { FatChain } from './fatCHain'
 import { DirectoryEntries } from './directoryEntries'
-import { HeaderView, SectorView, DifatSectorView, FatSectorView, ChainView } from './dataViews'
+import { HeaderView, DifatSectorView, FatSectorView } from './dataViews'
 import { SectorType, ObjectType, StreamType } from './enums'
 import { VirtualDirectory, VirtualFile } from './directory'
 import { chunkBuffer } from '../helpers'
@@ -22,7 +22,6 @@ export class CFB {
   public buildSectors() {
     let sectorSize = this.header.sectorSize
     this.sectors = chunkBuffer(this.buffer.slice(sectorSize), sectorSize)
-      .map(chunk => new SectorView(chunk))
   }
 
   public buildFatSectors() {
@@ -76,8 +75,7 @@ export class CFB {
       let miniFatView = this.fatChain.chains.get(startOfMiniFat)!
       let miniStreamView = this.fatChain.chains.get(this.directoryEntries.entries[0].startingSectorLocation)!
       let sectorSize = this.header.miniSectorSize
-      let miniStreamSectors = chunkBuffer(miniStreamView.buffer, sectorSize)
-        .map(chunk => new SectorView(chunk))
+      let miniStreamSectors = chunkBuffer(miniStreamView, sectorSize)
       this.miniFatChain = new FatChain([new FatSectorView(miniFatView)], miniStreamSectors)
     }
   }
@@ -121,7 +119,7 @@ export class CFB {
           }
           let sectorId = child.startingSectorLocation
           if(sectorId <= SectorType.MAXREGSECT) {
-            currentDirectory.files.set(child.name, new VirtualFile(chains.get(sectorId)!.buffer.slice(0, child.streamSize)))
+            currentDirectory.files.set(child.name, new VirtualFile(chains.get(sectorId)!.slice(0, child.streamSize)))
           }
           else {
             currentDirectory.files.set(child.name, new VirtualFile(new Uint8Array(0).buffer))
@@ -134,7 +132,7 @@ export class CFB {
 
   public header: Header
 
-  public sectors: SectorView[]
+  public sectors: ArrayBuffer[]
 
   public fatSectors: FatSectorView[]
 

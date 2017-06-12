@@ -39,11 +39,11 @@ export class Header {
     )
   }
 
-  public get headerSignature(): number[] {
+  private get headerSignature(): number[] {
     return Array.from(this.headerView.headerSignatureView.values())
   }
 
-  public get version(): string {
+  private get version(): string {
     return `${this.headerView.majorVersionView[0]}.${this.headerView.minorVersionView[0]}`
   }
 
@@ -71,7 +71,7 @@ export class Header {
     return 1 << this.headerView.sectorShiftView[0]
   }
 
-  public get numberOfFatSectors(): number {
+  private get numberOfFatSectors(): number {
     return this.headerView.fatChainLengthView[0]
   }
 

@@ -7,8 +7,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: update-npm
-          command: 'sudo npm install -g npm@latest'
+          name: version
+          command: 'node --version && npm --version'
       - restore_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
       - run:
@@ -21,6 +21,9 @@ jobs:
       - run:
           name: build
           command: npm run build
+      - run:
+          name: build-node
+          command: npm run build:node
       - run:
           name: test
           command: npm run start

@@ -1,5 +1,5 @@
 import { Header } from './header'
-import { FatChain } from './fatCHain'
+import { FatChain } from './fatChain'
 import { getDirectoryEntries, buildHierarchy } from './directoryEntries'
 import { HeaderView, DifatSectorView, FatSectorView, DirectoryEntryView } from './dataViews'
 import { SectorType, ObjectType, StreamType } from './enums'

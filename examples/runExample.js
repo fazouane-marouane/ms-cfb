@@ -57,7 +57,7 @@ function processFile(filename) {
   console.log(['index', rightpad('name', 32), 'sector', 'size',
     rightpad('leftId', 8), rightpad('rightId', 8), rightpad('childId', 8)
   ].join('\t'))
-  cfb.directoryEntries.entries.forEach((entry, index) => {
+  cfb.directoryEntries.forEach((entry, index) => {
     console.log([index,
       rightpad(entry.name, 32),
       ignoreSpecialValues(entry.startingSectorLocation),

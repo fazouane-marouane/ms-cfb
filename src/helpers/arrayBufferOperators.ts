@@ -6,3 +6,14 @@ export function chunkBuffer(buffer: ArrayBuffer, chunkSize: number): ArrayBuffer
       .map(index => slicedBuffer(index))
     return chunks
 }
+
+export function joinBuffers(buffers: ArrayBuffer[]): ArrayBuffer {
+    let totalBytes = buffers.map(buffer => buffer.byteLength).reduce((acc, val)=> acc+val)
+    let tmp = new Uint8Array(totalBytes)
+    let currentByteLength = 0
+    buffers.map(buffer => {
+      tmp.set(new Uint8Array(buffer), currentByteLength)
+      currentByteLength += buffer.byteLength
+    })
+    return tmp.buffer
+}

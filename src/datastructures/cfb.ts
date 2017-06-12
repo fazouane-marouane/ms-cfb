@@ -111,7 +111,7 @@ export class CFB {
       for(let childId of children.get(currentDirectoryIndex)!) {
         let child = this.directoryEntries.entries[childId]
         if (child.objectType !== ObjectType.STREAM) {
-          currentDirectory.subdirectories[child.name] = directories.get(childId)!
+          currentDirectory.subdirectories.set(child.name, directories.get(childId)!)
           toExplore.push(childId)
         }
         else {
@@ -121,10 +121,10 @@ export class CFB {
           }
           let sectorId = child.startingSectorLocation
           if(sectorId <= SectorType.MAXREGSECT) {
-            currentDirectory.files[child.name] = chains.get(sectorId)!.buffer.slice(0, child.streamSize)
+            currentDirectory.files.set(child.name, chains.get(sectorId)!.buffer.slice(0, child.streamSize))
           }
           else {
-            currentDirectory.files[child.name] = new Uint8Array(0).buffer
+            currentDirectory.files.set(child.name, new Uint8Array(0).buffer)
           }
         }
       }

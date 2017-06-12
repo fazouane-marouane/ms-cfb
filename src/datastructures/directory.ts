@@ -1,14 +1,5 @@
 export class Directory {
-  constructor() {
-    this.subdirectories = {}
-    this.files = {}
-  }
+  subdirectories: Map<string, Directory> = new Map()
 
-  subdirectories: {
-    [name: string]: Directory
-  }
-
-  files: {
-    [name: string]: ArrayBuffer
-  }
+  files: Map<string, ArrayBuffer> = new Map()
 }

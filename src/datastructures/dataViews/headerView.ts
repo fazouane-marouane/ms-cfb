@@ -1,4 +1,4 @@
-import { SectorType } from '../enums/sectorType'
+import { SectorType } from '../enums'
 
 export class HeaderView {
   constructor(public buffer: ArrayBuffer) {

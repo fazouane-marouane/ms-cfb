@@ -14,7 +14,7 @@ export class FatChain {
   private buildChains(): number[][] {
     let chainsNodes = new Map<number, LinkedChainNode>()
     let chainsHeadNodes = new Map<number, LinkedChainNode>()
-    let partialFatArrays = this.fatSectors.map(fatSector => fatSector.partialFatArray)
+    let partialFatArrays = this.fatSectors.map(fatSector => fatSector.partialArray)
     let completeFatArray: number[] = Array.prototype.concat(...partialFatArrays)
 
     completeFatArray.forEach((nextIndex, currentIndex) => {

@@ -3,7 +3,7 @@ import { FatChain } from './fatCHain'
 import { DirectoryEntries } from './directoryEntries'
 import { HeaderView, SectorView, DifatSectorView, FatSectorView, ChainView } from './dataViews'
 import { SectorType, ObjectType, StreamType } from './enums'
-import { Directory } from './directory'
+import { VirtualDirectory, VirtualFile } from './directory'
 import { chunkBuffer } from '../helpers'
 
 export class CFB {
@@ -49,7 +49,7 @@ export class CFB {
         throw new Error(`sector ${currentIndex}'s already been visited.`)
       }
       let difatSector = new DifatSectorView(this.sectors[currentIndex])
-      result.push(...difatSector.partialDifatArray)
+      result.push(...difatSector.partialArray)
       visitedSectors.add(currentIndex)
       currentIndex = difatSector.nextDifatSectorIndex
     }
@@ -83,11 +83,11 @@ export class CFB {
   }
 
   public buildDirectoryHierarchy() {
-    let directories = new Map<number, Directory>()
+    let directories = new Map<number, VirtualDirectory>()
     let children = new Map<number, number[]>()
     this.directoryEntries.entries.forEach((entry, index) => {
       if (entry.objectType !== ObjectType.STREAM) {
-        directories.set(index, new Directory)
+        directories.set(index, new VirtualDirectory)
         let currentChildren: number[] = []
         let toExplore: number[] = [entry.childId]
         while (toExplore.length > 0) {
@@ -121,10 +121,10 @@ export class CFB {
           }
           let sectorId = child.startingSectorLocation
           if(sectorId <= SectorType.MAXREGSECT) {
-            currentDirectory.files.set(child.name, chains.get(sectorId)!.buffer.slice(0, child.streamSize))
+            currentDirectory.files.set(child.name, new VirtualFile(chains.get(sectorId)!.buffer.slice(0, child.streamSize)))
           }
           else {
-            currentDirectory.files.set(child.name, new Uint8Array(0).buffer)
+            currentDirectory.files.set(child.name, new VirtualFile(new Uint8Array(0).buffer))
           }
         }
       }
@@ -144,5 +144,5 @@ export class CFB {
 
   public directoryEntries: DirectoryEntries
 
-  public root: Directory
+  public root: VirtualDirectory
 }

@@ -1,5 +1,11 @@
-export class Directory {
-  subdirectories: Map<string, Directory> = new Map()
+export class VirtualFile {
+  constructor(public content: ArrayBuffer, public creationTime: Date | null = null,
+    public modificationTime: Date | null = null) {
+  }
+}
 
-  files: Map<string, ArrayBuffer> = new Map()
+export class VirtualDirectory {
+  subdirectories: Map<string, VirtualDirectory> = new Map()
+
+  files: Map<string, VirtualFile> = new Map()
 }

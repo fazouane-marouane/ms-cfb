@@ -58,29 +58,29 @@ export class DirectoryEntryView {
     return this.objectTypeView[0]
   }
 
-  public directoryEntryNameView: Uint16Array
+  private directoryEntryNameView: Uint16Array
 
-  public directoryEntryNameLengthView: Uint16Array
+  private directoryEntryNameLengthView: Uint16Array
 
-  public objectTypeView: Uint8Array
+  private objectTypeView: Uint8Array
 
-  public flagColorView: Uint8Array
+  private flagColorView: Uint8Array
 
-  public leftSiblingIdView: Uint32Array
+  private leftSiblingIdView: Uint32Array
 
-  public rightSiblingIdView: Uint32Array
+  private rightSiblingIdView: Uint32Array
 
-  public childIdView: Uint32Array
+  private childIdView: Uint32Array
 
-  public clsidView: Uint32Array
+  private clsidView: Uint32Array
 
-  public stateBitsView: Uint32Array
+  private stateBitsView: Uint32Array
 
-  public creationTimeView: Uint8Array
+  private creationTimeView: Uint8Array
 
-  public modificationTimeView: Uint8Array
+  private modificationTimeView: Uint8Array
 
-  public startingSectorLocationView: Uint32Array
+  private startingSectorLocationView: Uint32Array
 
-  public streamSizeView: Uint32Array
+  private streamSizeView: Uint32Array
 }

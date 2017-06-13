@@ -46,17 +46,22 @@
     "build:bundle": "neutrino build",
     "build:es2015": "tsc --outDir ./build --module es2015 --declaration true",
     "build:node": "tsc --outDir ./node-build --module commonjs",
+    "lint": "tslint --config tslint.json --type-check --project tsconfig.json \"src/**/*.ts\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
     "@types/node": "^7.0.29",
     "neutrino": "^5.9.0",
-    "neutrino-preset-ts": "^1.5.2",
+    "neutrino-preset-ts": "^1.5.5",
     "npm-run-all": "^4.0.2",
     "typescript": "^2.3.4"
   },
   "files": [
     "./build",
     "./dist"
-  ]
+  ],
+  "dependencies": {
+    "tslint": "^5.4.3",
+    "tslint-microsoft-contrib": "^5.0.0"
+  }
 }

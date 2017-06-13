@@ -27,7 +27,6 @@ module.exports = neutrino => {
           .clear()
           .add(neutrino.options.entry === defaultEntry ? defaultTsEntry : neutrino.options.entry)
           .prepend(`webpack-dev-server/client?${protocol}://${host}:${port}/`)
-          .prepend('webpack/hot/dev-server')
           .end()
     })
 }

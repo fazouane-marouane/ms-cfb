@@ -1,9 +1,15 @@
-export function arraysAreEqual<T>(fst: T[], snd: T[]) {
-  if (fst === snd) return true
-  if (!fst || !snd) return false
-  if (fst.length !== snd.length) return false
-  for (var i = 0; i < fst.length; ++i) {
-    if (fst[i] !== snd[i]) return false
+/**
+ * Determines whether two sequences are equal
+ * @param fst first sequence
+ * @param snd second sequence
+ */
+export function arraysAreEqual<T>(fst: T[] | null, snd: T[] | null) : boolean {
+  if (fst === snd) {
+    return true
   }
-  return true
+  if (!fst || !snd || fst.length !== snd.length) {
+    return false
+  }
+
+  return fst.every((value: T, index: number) => value === snd[index])
 }

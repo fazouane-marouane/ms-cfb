@@ -3,11 +3,11 @@
  * @param fst first sequence
  * @param snd second sequence
  */
-export function arraysAreEqual<T>(fst: T[] | null, snd: T[] | null) : boolean {
+export function arraysAreEqual<T>(fst: T[], snd: T[]) : boolean {
   if (fst === snd) {
     return true
   }
-  if (!fst || !snd || fst.length !== snd.length) {
+  if (fst.length !== snd.length) {
     return false
   }
 

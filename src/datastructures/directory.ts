@@ -2,9 +2,10 @@
  *
  */
 export class VirtualFile {
-  constructor(public content: ArrayBuffer, public creationTime: Date | null = null,
-    public modificationTime: Date | null = null) {
-  }
+  constructor(
+    public content: ArrayBuffer,
+    public creationTime: Date | null = null,
+    public modificationTime: Date | null = null) {}
 }
 
 /**

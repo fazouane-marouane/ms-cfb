@@ -1,21 +1,21 @@
-/**
- *
- */
 import { chunkBuffer } from '../helpers'
 import { DifatSectorView, DirectoryEntryView, FatSectorView, HeaderView } from './dataViews'
 import { VirtualDirectory, VirtualFile } from './directory'
 import { buildHierarchy, getDirectoryEntries } from './directoryEntries'
 import { ObjectType, SectorType, StreamType } from './enums'
-import { FatChain } from './fatChain'
+import { FatChain } from './FatChain'
 import { Header } from './Header'
 
+/**
+ *
+ */
 export class CFB {
-  constructor(private buffer: ArrayBuffer) {
+  constructor(buffer: ArrayBuffer) {
     this.header = new Header(new HeaderView(buffer))
     if (!this.header.check()) {
       throw new Error('bad format.')
     }
-    this.buildSectors()
+    this.buildSectors(buffer)
     this.buildFatSectors()
     this.buildDirectoryEntries()
     this.buildMiniFatSectors()
@@ -24,9 +24,9 @@ export class CFB {
       this.fatChain.chains, this.miniFatChain.chains)
   }
 
-  private buildSectors(): void {
+  private buildSectors(buffer: ArrayBuffer): void {
     const sectorSize = this.header.sectorSize
-    this.sectors = chunkBuffer(this.buffer.slice(sectorSize), sectorSize)
+    this.sectors = chunkBuffer(buffer.slice(sectorSize), sectorSize)
   }
 
   private buildFatSectors(): void {

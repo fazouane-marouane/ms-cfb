@@ -1,5 +1,8 @@
-import { HeaderView } from './dataViews'
+/**
+ * 
+ */
 import { arraysAreEqual, imply } from '../helpers'
+import { HeaderView } from './dataViews'
 import { SectorType } from './enums'
 
 export class Header {

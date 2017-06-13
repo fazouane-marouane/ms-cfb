@@ -1,8 +1,14 @@
+/**
+ *
+ */
 export enum ColorFlag {
   RED = 0x00,
   BLACK = 0x01
 }
 
+/**
+ *
+ */
 export enum ObjectType {
   UNALLOCATED = 0x00,
   STORAGE = 0x01,
@@ -10,6 +16,9 @@ export enum ObjectType {
   ROOTSTORAGE = 0x05
 }
 
+/**
+ *
+ */
 export enum SectorType {
   MAXREGSECT = 0xFFFFFFFA,
   DIFSECT = 0xFFFFFFFC,
@@ -18,6 +27,9 @@ export enum SectorType {
   FREESECT = 0xFFFFFFFF
 }
 
+/**
+ *
+ */
 export enum StreamType {
   MAXREGSID = 0xFFFFFFFA,
   NOSTREAM = 0xFFFFFFFF

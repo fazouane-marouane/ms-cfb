@@ -1,5 +1,6 @@
-import {} from '../enums'
-
+/**
+ *
+ */
 export class DirectoryEntryView {
   constructor(buffer: ArrayBuffer) {
     this.directoryEntryNameView = new Uint16Array(buffer, 0x00, 32) // 2 * 32 = 64 bytes
@@ -18,20 +19,21 @@ export class DirectoryEntryView {
   }
 
   public check(): boolean {
-    let chars = Array.from(this.directoryEntryNameView.values())
+    const chars = Array.from(this.directoryEntryNameView.values())
+
     return ((this.directoryEntryNameLengthView[0] % 2 === 0) &&
-      chars.indexOf(0) === this.directoryEntryNameLengthView[0] / 2)
+      chars.indexOf(0) === this.nameLength)
   }
 
   public get name(): string {
-    let chars = Array.from(this.directoryEntryNameView.values())
-    let zeroIndex = chars.indexOf(0)
-    chars.splice(zeroIndex, 32)
+    const chars = Array.from(this.directoryEntryNameView.values())
+      .slice(0, this.nameLength)
+
     return String.fromCodePoint(...chars)
   }
 
   public get nameLength(): number {
-    return this.directoryEntryNameLengthView[0]/2
+    return this.directoryEntryNameLengthView[0] / 2
   }
 
   public get startingSectorLocation(): number {

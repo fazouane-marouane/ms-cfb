@@ -1,5 +1,8 @@
 import { SectorType } from '../enums'
 
+/**
+ *
+ */
 export class HeaderView {
   constructor(private buffer: ArrayBuffer) {
     // Header
@@ -170,6 +173,7 @@ export class HeaderView {
    * Remaining empty space
    */
   public get remainingSpace(): Uint32Array {
+    // tslint:disable-next-line:no-bitwise
     return new Uint32Array(this.buffer, 1 << 0x9, (1 << 0xc) - (1 << 0x9))
   }
 }

@@ -1,4 +1,4 @@
-import { CFB } from '../datastructures/CFB'
+import { CFB } from '../datastructures/cfb'
 
 /**
  *

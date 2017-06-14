@@ -3,8 +3,8 @@ import { DifatSectorView, DirectoryEntryView, FatSectorView, HeaderView } from '
 import { VirtualDirectory, VirtualFile } from './directory'
 import { buildHierarchy, getDirectoryEntries } from './directoryEntries'
 import { ObjectType, SectorType, StreamType } from './enums'
-import { FatChain } from './FatChain'
-import { Header } from './Header'
+import { FatChain } from './fatChain'
+import { Header } from './header'
 
 /**
  *

@@ -1,5 +1,5 @@
 let readFileSync = require('fs').readFileSync
-let readFromNodeBuffer = require('../node-build').readFromNodeBuffer
+let { readFromNodeBuffer } = require('../node-build')
 
 for (let index = 2; index < process.argv.length; index++) {
   let filename = process.argv[index]

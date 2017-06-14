@@ -1,22 +1,23 @@
+export function partialDifatArrayView(buffer: ArrayBuffer): Uint32Array {
+  return new Uint32Array(buffer, 0, buffer.byteLength / 4 - 1) // buffer.byteLength - 4 bytes
+}
+
+export function nextDifatSectorIndexView(buffer: ArrayBuffer): Uint32Array {
+  return new Uint32Array(buffer, buffer.byteLength - 4, 1) // 1 byte
+}
+
 /**
  *
  */
 export class DifatSectorView {
-  constructor(buffer: ArrayBuffer) {
-    const byteOffset = buffer.byteLength - 4
-    this._array = new Uint32Array(buffer, 0, byteOffset / 4) // 4 * byteOffset / 4 = byteOffset
-    this._nextId = new Uint32Array(buffer, byteOffset, 1) // 1 byte
+  constructor(private buffer: ArrayBuffer) {
   }
 
-  public get partialArray(): number[] {
-    return Array.from(this._array.values())
+  public getArray(): number[] {
+    return Array.from(partialDifatArrayView(this.buffer).values())
   }
 
-  public get nextDifatSectorIndex(): number {
-    return this._nextId[0]
+  public getNextIndex(): number {
+    return nextDifatSectorIndexView(this.buffer)[0]
   }
-
-  private _array: Uint32Array
-
-  private _nextId: Uint32Array
 }

@@ -28,7 +28,7 @@ class LinkedChainNode {
 function buildChains(fatSectors: FatSectorView[]): number[][] {
   const chainsNodes = new Map<number, LinkedChainNode>()
   const chainsHeadNodes = new Map<number, LinkedChainNode>()
-  const partialFatArrays = fatSectors.map((fatSector: FatSectorView) => fatSector.partialArray)
+  const partialFatArrays = fatSectors.map((fatSector: FatSectorView) => fatSector.getArray())
   const completeFatArray: number[] = Array.prototype.concat(...partialFatArrays)
 
   completeFatArray.forEach((nextIndex: number, currentIndex: number) => {

@@ -17,20 +17,21 @@ export class Header {
     const version = this.version()
     const bytesOrder = this.bytesOrder()
     const sectorSize = this.sectorSize()
+    const { buffer } = this
 
     return (
       arraysAreEqual(this.signature(), [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1]) &&
       (version === '3.62' || version === '4.62') &&
-      headerClsidView(this.buffer).every((value: number) => value === 0) &&
+      headerClsidView(buffer).every((value: number) => value === 0) &&
       (arraysAreEqual(bytesOrder, [0xFF, 0xFE]) || arraysAreEqual(bytesOrder, [0xFE, 0xFF])) &&
       imply(version === '3.62', sectorSize === 512) &&
       imply(version === '4.62', sectorSize === 4096) &&
       this.miniSectorSize() === 64 &&
-      reservedView(this.buffer).every((value: number) => value === 0) &&
-      imply(version === '3.62', directoryChainLengthView(this.buffer)[0] === 0) &&
+      reservedView(buffer).every((value: number) => value === 0) &&
+      imply(version === '3.62', directoryChainLengthView(buffer)[0] === 0) &&
       this.miniSectorCutoff() === 4096 &&
       this.checkDifat() &&
-      imply(version === '4.62', () => remainingSpaceView(this.buffer).every((value: number) => value === 0))
+      imply(version === '4.62', () => remainingSpaceView(buffer).every((value: number) => value === 0))
     )
   }
 

@@ -1,14 +1,15 @@
+export function partialFatArrayView(buffer: ArrayBuffer): Uint32Array {
+  return new Uint32Array(buffer)
+}
+
 /**
  *
  */
 export class FatSectorView {
-  constructor(buffer: ArrayBuffer) {
-    this._array = new Uint32Array(buffer)
+  constructor(private buffer: ArrayBuffer) {
   }
 
-  public get partialArray(): number[] {
-    return Array.from(this._array.values())
+  public getArray(): number[] {
+    return Array.from(partialFatArrayView(this.buffer).values())
   }
-
-  private _array: Uint32Array
 }

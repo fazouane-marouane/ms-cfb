@@ -1,0 +1,19 @@
+version: 1.0.{build}
+platform: x64
+install:
+- ps: >-
+    Install-Product node 8.1 x64
+
+    node --version
+
+    npm --version
+cache: node_modules
+build_script:
+- cmd: >-
+    npm install
+
+    npm run build
+
+    npm run build:node
+test_script:
+- cmd: npm run start

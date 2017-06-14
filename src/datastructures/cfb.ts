@@ -11,27 +11,27 @@ import { Header } from './header'
  */
 export class CFB {
   constructor(buffer: ArrayBuffer) {
-    this.header = new Header(buffer)
-    if (!this.header.check()) {
+    const header = this.header = new Header(buffer)
+    if (!header.check()) {
       throw new Error('bad format.')
     }
-    this.buildSectors(buffer)
-    this.buildFatSectors()
-    this.buildDirectoryEntries()
-    this.buildMiniFatSectors()
+    this.buildSectors(buffer, header)
+    this.buildFatSectors(header)
+    this.buildDirectoryEntries(header)
+    this.buildMiniFatSectors(header)
     // build the directory's hierarchy
-    this.root = buildHierarchy(this.directoryEntries, this.header.miniSectorCutoff,
+    this.root = buildHierarchy(this.directoryEntries, header.miniSectorCutoff(),
       this.fatChain.chains, this.miniFatChain.chains)
   }
 
-  private buildSectors(buffer: ArrayBuffer): void {
-    const sectorSize = this.header.sectorSize
+  private buildSectors(buffer: ArrayBuffer, header: Header): void {
+    const sectorSize = header.sectorSize()
     this.sectors = chunkBuffer(buffer.slice(sectorSize), sectorSize)
   }
 
-  private buildFatSectors(): void {
+  private buildFatSectors(header: Header): void {
     const visitedSectors = new Set<number>()
-    this.fatSectors = this.getDifatArray(visitedSectors)
+    this.fatSectors = this.getDifatArray(visitedSectors, header)
       .map((sectorNumber: number) => {
         if (visitedSectors.has(sectorNumber)) {
           throw new Error(`sector ${sectorNumber}'s already been visited.`)
@@ -43,15 +43,15 @@ export class CFB {
     this.fatChain = new FatChain(this.fatSectors, this.sectors)
   }
 
-  private getDifatArray(visitedSectors: Set<number>): number[] {
-    const result = this.header.initialDifat
-    let currentIndex = this.header.startOfDifat
+  private getDifatArray(visitedSectors: Set<number>, header: Header): number[] {
+    const result = header.getInitialDifat()
+    let currentIndex = header.getStartOfDifat()
     while (currentIndex !== SectorType.ENDOFCHAIN) {
       if (currentIndex >= this.sectors.length) {
         throw new Error(`sector index ${currentIndex} is outside the file size.`)
       }
       if (visitedSectors.has(currentIndex)) {
-        throw new Error(`sector ${currentIndex}'s already been visited.`)
+        throw new Error(`sector ${currentIndex}'s already been visited`)
       }
       const difatSector = new DifatSectorView(this.sectors[currentIndex])
       result.push(...difatSector.partialArray)
@@ -63,32 +63,32 @@ export class CFB {
       .filter((sectorNumber: number) => sectorNumber <= SectorType.MAXREGSECT)
   }
 
-  private buildDirectoryEntries(): void {
-    const startOfDirectoryChain = this.header.startOfDirectoryChain
+  private buildDirectoryEntries(header: Header): void {
+    const startOfDirectoryChain = header.getStartOfDirectoryChain()
     if (startOfDirectoryChain !== SectorType.ENDOFCHAIN) {
       if (!this.fatChain.chains.has(startOfDirectoryChain)) {
-        throw new Error(`Directory chain sector not found. It was supposed to be available at ${startOfDirectoryChain}.`)
+        throw new Error(`Directory sector ${startOfDirectoryChain} not found`)
       }
       // tslint:disable-next-line:no-non-null-assertion
       this.directoryEntries = getDirectoryEntries(this.fatChain.chains.get(startOfDirectoryChain)!)
     }
   }
 
-  private buildMiniFatSectors(): void {
-    const startOfMiniFat = this.header.startOfMiniFat
+  private buildMiniFatSectors(header: Header): void {
+    const startOfMiniFat = header.getStartOfMiniFat()
     if (startOfMiniFat !== SectorType.ENDOFCHAIN) {
       if (!this.fatChain.chains.has(startOfMiniFat)) {
-        throw new Error(`MiniFAT sector not found. It was supposed to be available at ${startOfMiniFat}.`)
+        throw new Error(`MiniFAT sector ${startOfMiniFat} not found`)
       }
       // tslint:disable-next-line:no-non-null-assertion
       const miniFatView = this.fatChain.chains.get(startOfMiniFat)!
       const miniStreamStart = this.directoryEntries.length === 0 ? null : this.directoryEntries[0].startingSectorLocation
       if (miniStreamStart === null || !this.fatChain.chains.has(miniStreamStart)) {
-        throw new Error(`MiniStream sector not found. It was supposed to be available at ${miniStreamStart}.`)
+        throw new Error(`MiniStream sector ${miniStreamStart} not found`)
       }
       // tslint:disable-next-line:no-non-null-assertion
       const miniStreamView = this.fatChain.chains.get(miniStreamStart)!
-      const sectorSize = this.header.miniSectorSize
+      const sectorSize = header.miniSectorSize()
       const miniStreamSectors = chunkBuffer(miniStreamView, sectorSize)
       this.miniFatChain = new FatChain([new FatSectorView(miniFatView)], miniStreamSectors)
     }

@@ -49,6 +49,7 @@ export class FatChain {
         let nextNode: LinkedChainNode | null = null
         if (nextIndex !== SectorType.ENDOFCHAIN) {
           if (chainsNodes.has(nextIndex)) {
+            // tslint:disable-next-line:no-non-null-assertion
             nextNode = chainsNodes.get(nextIndex)!
             chainsHeadNodes.delete(nextIndex)
           } else {

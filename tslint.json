@@ -117,9 +117,7 @@
     }],
     "max-line-length": [true, 140],
     "member-access": true,
-    "member-ordering": [true, {
-      "order": "fields-last"
-    }],
+    "member-ordering": false,
     "missing-jsdoc": true,
     "mocha-unneeded-done": true,
     "new-parens": true,

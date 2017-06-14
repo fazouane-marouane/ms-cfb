@@ -69,6 +69,7 @@ export class CFB {
       if (!this.fatChain.chains.has(startOfDirectoryChain)) {
         throw new Error(`Directory chain sector not found. It was supposed to be available at ${startOfDirectoryChain}.`)
       }
+      // tslint:disable-next-line:no-non-null-assertion
       this.directoryEntries = getDirectoryEntries(this.fatChain.chains.get(startOfDirectoryChain)!)
     }
   }
@@ -79,8 +80,14 @@ export class CFB {
       if (!this.fatChain.chains.has(startOfMiniFat)) {
         throw new Error(`MiniFAT sector not found. It was supposed to be available at ${startOfMiniFat}.`)
       }
+      // tslint:disable-next-line:no-non-null-assertion
       const miniFatView = this.fatChain.chains.get(startOfMiniFat)!
-      const miniStreamView = this.fatChain.chains.get(this.directoryEntries[0].startingSectorLocation)!
+      const miniStreamStart = this.directoryEntries.length === 0 ? null : this.directoryEntries[0].startingSectorLocation
+      if (miniStreamStart === null || !this.fatChain.chains.has(miniStreamStart)) {
+        throw new Error(`MiniStream sector not found. It was supposed to be available at ${miniStreamStart}.`)
+      }
+      // tslint:disable-next-line:no-non-null-assertion
+      const miniStreamView = this.fatChain.chains.get(miniStreamStart)!
       const sectorSize = this.header.miniSectorSize
       const miniStreamSectors = chunkBuffer(miniStreamView, sectorSize)
       this.miniFatChain = new FatChain([new FatSectorView(miniFatView)], miniStreamSectors)

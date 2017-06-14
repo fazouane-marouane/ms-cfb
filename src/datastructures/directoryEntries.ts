@@ -1,4 +1,4 @@
-import { chunkBuffer } from '../helpers'
+import { assetIsDefined, chunkBuffer } from '../helpers'
 import { DirectoryEntryView } from './dataViews'
 import { VirtualDirectory, VirtualFile } from './directory'
 import { ObjectType, SectorType, StreamType } from './enums'
@@ -28,6 +28,7 @@ function redBlackTreeTraversal(rootId: number, entries: DirectoryEntryView[],
   directoryCallback: (entry: DirectoryEntryView, id: number) => void): void {
   const toExplore: number[] = [rootId]
   while (toExplore.length > 0) {
+    // tslint:disable-next-line:no-non-null-assertion
     const currentIndex = toExplore.pop()!
     const currentEntry = entries[currentIndex]
     if (currentEntry.objectType === ObjectType.STREAM) {
@@ -60,6 +61,7 @@ function completeDirectoryTreeTraversal(rootId: number, entries: DirectoryEntryV
   directoryCallback: (entry: DirectoryEntryView, currentId: number, parentId: number) => void): void {
   const toExplore = [rootId]
   while (toExplore.length > 0) {
+    // tslint:disable-next-line:no-non-null-assertion
     const currentIndex = toExplore.pop()!
     const firstChild = entries[currentIndex].childId
     redBlackTreeTraversal(firstChild, entries,
@@ -99,13 +101,16 @@ export function buildHierarchy(entries: DirectoryEntryView[], miniSectorCutoff: 
         chains = miniFatChain
       }
       const sectorId = entry.startingSectorLocation
+    // tslint:disable-next-line:no-non-null-assertion
       directories.get(parentId)!.files.set(entry.name, new VirtualFile(
-        sectorId <= SectorType.MAXREGSECT ? chains.get(sectorId)!.slice(0, entry.streamSize) :
+        sectorId <= SectorType.MAXREGSECT ? assetIsDefined(chains.get(sectorId)).slice(0, entry.streamSize) :
           new Uint8Array(0).buffer))
     },
     (entry: DirectoryEntryView, entryId: number, parentId: number) => {
+    // tslint:disable-next-line:no-non-null-assertion
       directories.get(parentId)!.subdirectories.set(entry.name, directories.get(entryId)!)
     })
 
+  // tslint:disable-next-line:no-non-null-assertion
   return directories.get(0)!
 }

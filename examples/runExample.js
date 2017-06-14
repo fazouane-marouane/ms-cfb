@@ -13,17 +13,17 @@ function processFile(filename) {
   let cfb = readFromNodeBuffer(buffer)
   let header = cfb.header
   let sectors = cfb.sectors
-  console.log('signature', header.headerSignature)
-  console.log('version', header.version)
-  console.log('bytesOrder', header.bytesOrder)
-  console.log('start of directoryChain', header.startOfDirectoryChain)
-  console.log('start of minifat', header.startOfMiniFat)
-  console.log('start of difat', header.startOfDifat)
-  console.log('sector size', header.sectorSize)
-  console.log('number of fat sectors', header.numberOfFatSectors)
+  console.log('signature', header.signature())
+  console.log('version', header.version())
+  console.log('bytesOrder', header.bytesOrder())
+  console.log('start of directoryChain', header.getStartOfDirectoryChain)
+  console.log('start of minifat', header.getStartOfMiniFat)
+  console.log('start of difat', header.getStartOfDifat)
+  console.log('sector size', header.sectorSize())
+  console.log('number of fat sectors', header.getNumberOfFatSectors())
   console.log('number of sectors', sectors.length)
-  console.log('number of chains', cfb.fatChain.chains.size)
-  cfb.fatChain.chains.forEach((buffer, startIndex) => {
+  console.log('number of chains', cfb.fatChain.size)
+  cfb.fatChain.forEach((buffer, startIndex) => {
     console.log(`startIndex ${startIndex}, byteLength ${buffer.byteLength}`)
   })
 

@@ -25,51 +25,49 @@ class LinkedChainNode {
   }
 }
 
+function buildChains(fatSectors: FatSectorView[]): number[][] {
+  const chainsNodes = new Map<number, LinkedChainNode>()
+  const chainsHeadNodes = new Map<number, LinkedChainNode>()
+  const partialFatArrays = fatSectors.map((fatSector: FatSectorView) => fatSector.partialArray)
+  const completeFatArray: number[] = Array.prototype.concat(...partialFatArrays)
+
+  completeFatArray.forEach((nextIndex: number, currentIndex: number) => {
+    if (nextIndex <= SectorType.MAXREGSECT || nextIndex === SectorType.ENDOFCHAIN) {
+      let nextNode: LinkedChainNode | null = null
+      if (nextIndex !== SectorType.ENDOFCHAIN) {
+        if (chainsNodes.has(nextIndex)) {
+          // tslint:disable-next-line:no-non-null-assertion
+          nextNode = chainsNodes.get(nextIndex)!
+          chainsHeadNodes.delete(nextIndex)
+        } else {
+          nextNode = new LinkedChainNode(nextIndex, null)
+          chainsNodes.set(nextIndex, nextNode)
+        }
+      }
+      let currentNode = chainsNodes.get(currentIndex)
+      if (currentNode !== undefined) {
+        currentNode.next = nextNode
+      } else {
+        currentNode = new LinkedChainNode(currentIndex, nextNode)
+        chainsNodes.set(currentIndex, currentNode)
+        chainsHeadNodes.set(currentIndex, currentNode)
+      }
+    }
+  })
+
+  return Array.from(chainsHeadNodes.values()).map((linkedList: LinkedChainNode) => linkedList.toArray())
+}
+
 /**
  *
  */
-export class FatChain {
-  constructor(private fatSectors: FatSectorView[], private sectors: ArrayBuffer[]) {
-    this.chains = new Map<number, ArrayBuffer>()
-    this.buildChains()
-      .forEach((chainIndices: number[]) => {
-        const sectorsChain = chainIndices.map((index: number) => sectors[index])
-        this.chains.set(chainIndices[0], joinBuffers(sectorsChain))
-      })
-  }
-
-  private buildChains(): number[][] {
-    const chainsNodes = new Map<number, LinkedChainNode>()
-    const chainsHeadNodes = new Map<number, LinkedChainNode>()
-    const partialFatArrays = this.fatSectors.map((fatSector: FatSectorView) => fatSector.partialArray)
-    const completeFatArray: number[] = Array.prototype.concat(...partialFatArrays)
-
-    completeFatArray.forEach((nextIndex: number, currentIndex: number) => {
-      if (nextIndex <= SectorType.MAXREGSECT || nextIndex === SectorType.ENDOFCHAIN) {
-        let nextNode: LinkedChainNode | null = null
-        if (nextIndex !== SectorType.ENDOFCHAIN) {
-          if (chainsNodes.has(nextIndex)) {
-            // tslint:disable-next-line:no-non-null-assertion
-            nextNode = chainsNodes.get(nextIndex)!
-            chainsHeadNodes.delete(nextIndex)
-          } else {
-            nextNode = new LinkedChainNode(nextIndex, null)
-            chainsNodes.set(nextIndex, nextNode)
-          }
-        }
-        let currentNode = chainsNodes.get(currentIndex)
-        if (currentNode !== undefined) {
-          currentNode.next = nextNode
-        } else {
-          currentNode = new LinkedChainNode(currentIndex, nextNode)
-          chainsNodes.set(currentIndex, currentNode)
-          chainsHeadNodes.set(currentIndex, currentNode)
-        }
-      }
+export function getFatChains(fatSectors: FatSectorView[], sectors: ArrayBuffer[]): Map<number, ArrayBuffer> {
+  const chains = new Map<number, ArrayBuffer>()
+  buildChains(fatSectors)
+    .forEach((chainIndices: number[]) => {
+      const sectorsChain = chainIndices.map((index: number) => sectors[index])
+      chains.set(chainIndices[0], joinBuffers(sectorsChain))
     })
 
-    return Array.from(chainsHeadNodes.values()).map((linkedList: LinkedChainNode) => linkedList.toArray())
-  }
-
-  public chains: Map<number, ArrayBuffer>
+  return chains
 }

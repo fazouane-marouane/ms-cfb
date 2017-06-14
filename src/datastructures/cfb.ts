@@ -3,7 +3,7 @@ import { DifatSectorView, DirectoryEntryView, FatSectorView } from './dataViews'
 import { VirtualDirectory, VirtualFile } from './directory'
 import { buildHierarchy, getDirectoryEntries } from './directoryEntries'
 import { ObjectType, SectorType, StreamType } from './enums'
-import { FatChain } from './fatChain'
+import { getFatChains } from './fatChain'
 import { Header } from './header'
 
 /**
@@ -21,7 +21,7 @@ export class CFB {
     this.buildMiniFatSectors(header)
     // build the directory's hierarchy
     this.root = buildHierarchy(this.directoryEntries, header.miniSectorCutoff(),
-      this.fatChain.chains, this.miniFatChain.chains)
+      this.fatChain, this.miniFatChain)
   }
 
   private buildSectors(buffer: ArrayBuffer, header: Header): void {
@@ -40,7 +40,7 @@ export class CFB {
 
         return new FatSectorView(this.sectors[sectorNumber])
       })
-    this.fatChain = new FatChain(this.fatSectors, this.sectors)
+    this.fatChain = getFatChains(this.fatSectors, this.sectors)
   }
 
   private getDifatArray(visitedSectors: Set<number>, header: Header): number[] {
@@ -66,31 +66,31 @@ export class CFB {
   private buildDirectoryEntries(header: Header): void {
     const startOfDirectoryChain = header.getStartOfDirectoryChain()
     if (startOfDirectoryChain !== SectorType.ENDOFCHAIN) {
-      if (!this.fatChain.chains.has(startOfDirectoryChain)) {
+      if (!this.fatChain.has(startOfDirectoryChain)) {
         throw new Error(`Directory sector ${startOfDirectoryChain} not found`)
       }
       // tslint:disable-next-line:no-non-null-assertion
-      this.directoryEntries = getDirectoryEntries(this.fatChain.chains.get(startOfDirectoryChain)!)
+      this.directoryEntries = getDirectoryEntries(this.fatChain.get(startOfDirectoryChain)!)
     }
   }
 
   private buildMiniFatSectors(header: Header): void {
     const startOfMiniFat = header.getStartOfMiniFat()
     if (startOfMiniFat !== SectorType.ENDOFCHAIN) {
-      if (!this.fatChain.chains.has(startOfMiniFat)) {
+      if (!this.fatChain.has(startOfMiniFat)) {
         throw new Error(`MiniFAT sector ${startOfMiniFat} not found`)
       }
       // tslint:disable-next-line:no-non-null-assertion
-      const miniFatView = this.fatChain.chains.get(startOfMiniFat)!
+      const miniFatView = this.fatChain.get(startOfMiniFat)!
       const miniStreamStart = this.directoryEntries.length === 0 ? null : this.directoryEntries[0].startingSectorLocation
-      if (miniStreamStart === null || !this.fatChain.chains.has(miniStreamStart)) {
+      if (miniStreamStart === null || !this.fatChain.has(miniStreamStart)) {
         throw new Error(`MiniStream sector ${miniStreamStart} not found`)
       }
       // tslint:disable-next-line:no-non-null-assertion
-      const miniStreamView = this.fatChain.chains.get(miniStreamStart)!
+      const miniStreamView = this.fatChain.get(miniStreamStart)!
       const sectorSize = header.miniSectorSize()
       const miniStreamSectors = chunkBuffer(miniStreamView, sectorSize)
-      this.miniFatChain = new FatChain([new FatSectorView(miniFatView)], miniStreamSectors)
+      this.miniFatChain = getFatChains([new FatSectorView(miniFatView)], miniStreamSectors)
     }
   }
 
@@ -100,9 +100,9 @@ export class CFB {
 
   public fatSectors: FatSectorView[]
 
-  public fatChain: FatChain
+  public fatChain: Map<number, ArrayBuffer>
 
-  public miniFatChain: FatChain
+  public miniFatChain: Map<number, ArrayBuffer>
 
   public directoryEntries: DirectoryEntryView[]
 

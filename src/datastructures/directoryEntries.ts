@@ -1,4 +1,4 @@
-import { assetIsDefined, chunkBuffer } from '../helpers'
+import { assertIsDefined, chunkBuffer } from '../helpers'
 import { DirectoryEntryView } from './dataViews'
 import { VirtualDirectory, VirtualFile } from './directory'
 import { ObjectType, SectorType, StreamType } from './enums'
@@ -103,7 +103,7 @@ export function buildHierarchy(entries: DirectoryEntryView[], miniSectorCutoff: 
       const sectorId = entry.startingSectorLocation
     // tslint:disable-next-line:no-non-null-assertion
       directories.get(parentId)!.files.set(entry.name, new VirtualFile(
-        sectorId <= SectorType.MAXREGSECT ? assetIsDefined(chains.get(sectorId)).slice(0, entry.streamSize) :
+        sectorId <= SectorType.MAXREGSECT ? assertIsDefined(chains.get(sectorId)).slice(0, entry.streamSize) :
           new Uint8Array(0).buffer))
     },
     (entry: DirectoryEntryView, entryId: number, parentId: number) => {

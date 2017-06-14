@@ -15,7 +15,7 @@ class LinkedChainNode {
     // tslint:disable-next-line:no-var-self
     for (let currentNode: LinkedChainNode | null = this; currentNode !== null; currentNode = currentNode.next) {
       if (visitedNodes.has(currentNode.value)) {
-        throw new Error('node in linkedlist already visited.')
+        throw new Error('List node already visited')
       }
       result.push(currentNode.value)
       visitedNodes.add(currentNode.value)

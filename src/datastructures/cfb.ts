@@ -14,7 +14,7 @@ export class CFB {
   constructor(buffer: ArrayBuffer) {
     const header = this.header = new Header(buffer)
     if (!header.check()) {
-      throw new Error('bad format.')
+      throw new Error('bad format')
     }
     this.buildSectors(buffer, header)
     this.buildFatSectors(header)
@@ -36,7 +36,7 @@ export class CFB {
     const fatSectors = this.getDifatArray(visitedSectors, header)
       .map((sectorNumber: number) => {
         if (visitedSectors.has(sectorNumber)) {
-          throw new Error(`sector ${sectorNumber}'s already been visited.`)
+          throw new Error(`sector ${sectorNumber} already visited`)
         }
         visitedSectors.add(sectorNumber)
 
@@ -51,10 +51,10 @@ export class CFB {
     const {sectors} = this
     while (currentIndex !== SectorType.ENDOFCHAIN) {
       if (currentIndex >= sectors.length) {
-        throw new Error(`sector index ${currentIndex} is outside the file size.`)
+        throw new RangeError(`sector ${currentIndex} out of range`)
       }
       if (visitedSectors.has(currentIndex)) {
-        throw new Error(`sector ${currentIndex}'s already been visited`)
+        throw new Error(`sector ${currentIndex} already visited`)
       }
       const difatSector = sectors[currentIndex]
       result.push(...getPartialDifatArray(difatSector))

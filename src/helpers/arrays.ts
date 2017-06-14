@@ -13,3 +13,11 @@ export function arraysAreEqual<T>(fst: T[], snd: T[]) : boolean {
 
   return fst.every((value: T, index: number) => value === snd[index])
 }
+
+/**
+ *
+ * @param arrays
+ */
+export function concat<T>(arrays: T[][]): T[] {
+  return Array.prototype.concat(...arrays)
+}

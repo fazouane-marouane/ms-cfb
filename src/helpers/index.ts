@@ -1,5 +1,5 @@
 // tslint:disable-next-line:missing-jsdoc
 export * from './arrayBufferOperators'
-export * from './arraysAreEqual'
+export * from './arrays'
 export * from './asserts'
 export * from './imply'

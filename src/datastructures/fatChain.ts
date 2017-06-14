@@ -1,4 +1,4 @@
-import { joinBuffers } from '../helpers'
+import { concat, joinBuffers } from '../helpers'
 import { getPartialFatArray } from './dataViews'
 import { SectorType } from './enums'
 
@@ -28,7 +28,7 @@ class LinkedChainNode {
 function buildChains(partialFatArrays: ArrayBuffer[]): number[][] {
   const chainsNodes = new Map<number, LinkedChainNode>()
   const chainsHeadNodes = new Map<number, LinkedChainNode>()
-  const completeFatArray: number[] = Array.prototype.concat(...partialFatArrays)
+  const completeFatArray: number[] = concat(partialFatArrays.map(getPartialFatArray))
 
   completeFatArray.forEach((nextIndex: number, currentIndex: number) => {
     if (nextIndex <= SectorType.MAXREGSECT || nextIndex === SectorType.ENDOFCHAIN) {

@@ -1,5 +1,5 @@
 import { chunkBuffer } from '../helpers'
-import { DifatSectorView, FatSectorView } from './dataViews'
+import { getPartialDifatArray, getNextDifatSectorIndex } from './dataViews'
 import { VirtualDirectory, VirtualFile } from './directory'
 import { buildHierarchy, getDirectoryEntries } from './directoryEntries'
 import { DirectoryEntry } from './directoryEntry'
@@ -33,14 +33,14 @@ export class CFB {
   private buildFatSectors(header: Header): void {
     const visitedSectors = new Set<number>()
     const {sectors} = this
-    const fatSectors = this.fatSectors = this.getDifatArray(visitedSectors, header)
+    const fatSectors = this.getDifatArray(visitedSectors, header)
       .map((sectorNumber: number) => {
         if (visitedSectors.has(sectorNumber)) {
           throw new Error(`sector ${sectorNumber}'s already been visited.`)
         }
         visitedSectors.add(sectorNumber)
 
-        return new FatSectorView(sectors[sectorNumber])
+        return sectors[sectorNumber]
       })
     this.fatChain = getFatChains(fatSectors, sectors)
   }
@@ -56,10 +56,10 @@ export class CFB {
       if (visitedSectors.has(currentIndex)) {
         throw new Error(`sector ${currentIndex}'s already been visited`)
       }
-      const difatSector = new DifatSectorView(sectors[currentIndex])
-      result.push(...difatSector.getArray())
+      const difatSector = sectors[currentIndex]
+      result.push(...getPartialDifatArray(difatSector))
       visitedSectors.add(currentIndex)
-      currentIndex = difatSector.getNextIndex()
+      currentIndex = getNextDifatSectorIndex(difatSector)
     }
 
     return result
@@ -95,15 +95,13 @@ export class CFB {
       const miniStreamView = fatChain.get(miniStreamStart)!
       const sectorSize = header.miniSectorSize()
       const miniStreamSectors = chunkBuffer(miniStreamView, sectorSize)
-      this.miniFatChain = getFatChains([new FatSectorView(miniFatView)], miniStreamSectors)
+      this.miniFatChain = getFatChains([miniFatView], miniStreamSectors)
     }
   }
 
   public header: Header
 
   public sectors: ArrayBuffer[]
-
-  public fatSectors: FatSectorView[]
 
   public fatChain: Map<number, ArrayBuffer>
 

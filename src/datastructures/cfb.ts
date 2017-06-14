@@ -1,5 +1,5 @@
 import { chunkBuffer } from '../helpers'
-import { DifatSectorView, DirectoryEntryView, FatSectorView, HeaderView } from './dataViews'
+import { DifatSectorView, DirectoryEntryView, FatSectorView } from './dataViews'
 import { VirtualDirectory, VirtualFile } from './directory'
 import { buildHierarchy, getDirectoryEntries } from './directoryEntries'
 import { ObjectType, SectorType, StreamType } from './enums'
@@ -11,7 +11,7 @@ import { Header } from './header'
  */
 export class CFB {
   constructor(buffer: ArrayBuffer) {
-    this.header = new Header(new HeaderView(buffer))
+    this.header = new Header(buffer)
     if (!this.header.check()) {
       throw new Error('bad format.')
     }

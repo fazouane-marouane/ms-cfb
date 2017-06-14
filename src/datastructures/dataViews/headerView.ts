@@ -1,179 +1,177 @@
 import { SectorType } from '../enums'
 
 /**
+ * Header Signature (8 bytes). This array should always equal:
+ * `[0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1]`
+ *
+ * @param buffer The header's buffer
+ */
+export function headerSignatureView(buffer: ArrayBuffer): Uint8Array {
+  return new Uint8Array(buffer, 0x00, 8) // 1 * 8 = 8 bytes
+}
+
+/**
+ * Header CLSID (16 bytes). This should always contain zeros.
+ *
+ * @param buffer The header's buffer
+ */
+export function headerClsidView(buffer: ArrayBuffer): Uint32Array {
+  return new Uint32Array(buffer, 0x08, 4) // 4 * 4 = 16 bytes
+}
+
+/**
+ * The CFB's minor version (2 bytes). This field should always be 0x003E (62).
+ *
+ * @param buffer The header's buffer
+ */
+export function minorVersionView(buffer: ArrayBuffer): Uint16Array {
+  return new Uint16Array(buffer, 0x18, 1) // 2 * 1 = 2 bytes
+}
+
+/**
+ * The CFB's major version (2 bytes). This field can either equal 0x0003 or 0x0004.
+ *
+ * @param buffer The header's buffer
+ */
+export function majorVersionView(buffer: ArrayBuffer): Uint16Array {
+  return new Uint16Array(buffer, 0x1A, 1) // 2 * 1 = 2 bytes
+}
+
+/**
+ * Bytes order (2 bytes). This can either equal [0xFF, 0xFE] or [OxFE, 0xFF].
+ *
+ * @param buffer The header's buffer
+ */
+export function bytesOrderView(buffer: ArrayBuffer): Uint8Array {
+  return new Uint8Array(buffer, 0x1C, 2) // 1 * 2 = 2 bytes
+}
+
+/**
+ * The bit shift of the sector size (2 bytes). The final sector size should be `1 << shift`.
+ *
+ * @param buffer The header's buffer
+ */
+export function sectorShiftView(buffer: ArrayBuffer): Uint16Array {
+  return new Uint16Array(buffer, 0x1E, 1) // 2 * 1 = 2 bytes
+}
+
+/**
+ * The bit shift of the mini-sector size (2 bytes). The final mini-sector size should be `1 << shift`.
+ *
+ * @param buffer The header's buffer
+ */
+export function miniSectorShiftView(buffer: ArrayBuffer): Uint16Array {
+  return new Uint16Array(buffer, 0x20, 1) // 2 * 1 = 2 bytes
+}
+
+/**
+ * This is a reserved area (6 bytes). It should always contain zeros.
+ *
+ * @param buffer The header's buffer
+ */
+export function reservedView(buffer: ArrayBuffer): Uint16Array {
+  return new Uint16Array(buffer, 0x22, 3) // 2 * 3 = 6 bytes
+}
+
+/**
  *
  */
-export class HeaderView {
-  constructor(private buffer: ArrayBuffer) {
-    // Header
-    this.headerSignatureView = new Uint8Array(this.buffer, 0x00, 8) // 1 * 8 = 8 bytes
-    // Clsid
-    this.headerClsidView = new Uint32Array(this.buffer, 0x08, 4) // 4 * 4 = 16 bytes
-    // minor version
-    this.minorVersionView = new Uint16Array(this.buffer, 0x18, 1) // 2 * 1 = 2 bytes
-    // major version
-    this.majorVersionView = new Uint16Array(this.buffer, 0x1A, 1) // 2 * 1 = 2 bytes
-    // bytes order
-    this.bytesOrderView = new Uint8Array(this.buffer, 0x1C, 2) // 1 * 2 = 2 bytes
-    // sector shift
-    this.sectorShiftView = new Uint16Array(this.buffer, 0x1E, 1) // 2 * 1 = 2 bytes
-    // minisector shift
-    this.miniSectorShiftView = new Uint16Array(this.buffer, 0x20, 1) // 2 * 1 = 2 bytes
-    // reserved
-    this.reservedView = new Uint16Array(this.buffer, 0x22, 3) // 2 * 3 = 6 bytes
-    // directory chain length
-    this.directoryChainLengthView = new Uint32Array(this.buffer, 0x28, 1) // 4 * 1 = 4 bytes
-    // fat chain length
-    this.fatChainLengthView = new Uint32Array(this.buffer, 0x2C, 1) // 4 * 1 = 4 bytes
-    // directory chain start
-    this.directoryChainStartView = new Uint32Array(this.buffer, 0x30, 1) // 4 * 1 = 4 bytes
-    // transaction signature
-    this.transactionSignatureView = new Uint32Array(this.buffer, 0x34, 1) // 4 * 1 = 4 bytes
-    // mini sector cutoff
-    this.miniSectorCutoff = new Uint32Array(this.buffer, 0x38, 1) // 4 * 1 = 4 bytes
-    // mini fat start
-    this.miniFatStart = new Uint32Array(this.buffer, 0x3C, 1) // 4 * 1 = 4 bytes
-    // mini fat chain length
-    this.miniFatChainLength = new Uint32Array(this.buffer, 0x40, 1) // 4 * 1 = 4 bytes
-    // difat chain start
-    this.difatChainStart = new Uint32Array(this.buffer, 0x44, 1) // 4 * 1 = 4 bytes
-    // difat chain length
-    this.difatChainLength = new Uint32Array(this.buffer, 0x48, 1) // 4 * 1 = 4 bytes
-    // initial difat chain
-    this.initialDifatChain = new Uint32Array(this.buffer, 0x4C, 109) // 4 * 109 = 436
-  }
+export function directoryChainLengthView(buffer: ArrayBuffer): Uint32Array {
+  return new Uint32Array(buffer, 0x28, 1) // 4 * 1 = 4 bytes
+}
 
-  public reset(): void {
-    this.headerSignatureView.set([0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1])
-    this.headerClsidView.fill(0)
-    this.minorVersionView.fill(0x003E)
-    // byte order
-    new Uint16Array(this.buffer, 0x1C, 1).fill(0xFFFE)
-    this.miniSectorShiftView.fill(0x0006)
-    this.reservedView.fill(0)
-    this.directoryChainLengthView.fill(0)
-    this.fatChainLengthView.fill(0)
-    this.directoryChainStartView.fill(SectorType.ENDOFCHAIN)
-    this.transactionSignatureView.fill(0)
-    this.miniSectorCutoff.fill(0x00001000)
-    this.miniFatStart.fill(SectorType.ENDOFCHAIN)
-    this.miniFatChainLength.fill(0)
-    this.difatChainStart.fill(SectorType.ENDOFCHAIN)
-    this.difatChainLength.fill(0)
-    this.initialDifatChain.fill(SectorType.FREESECT)
-  }
+/**
+ *
+ */
+export function fatChainLengthView(buffer: ArrayBuffer): Uint32Array {
+  return new Uint32Array(buffer, 0x2C, 1) // 4 * 1 = 4 bytes
+}
 
-  public resetAsV4(): void {
-    this.reset()
-    this.majorVersionView.fill(0x0004)
-    this.sectorShiftView.fill(0x000c)
-    this.remainingSpace.fill(0)
-  }
+/**
+ *
+ */
+export function directoryChainStartView(buffer: ArrayBuffer): Uint32Array {
+  return new Uint32Array(buffer, 0x30, 1) // 4 * 1 = 4 bytes
+}
 
-  public resetAsV3(): void {
-    this.reset()
-    this.majorVersionView.fill(0x0003)
-    this.sectorShiftView.fill(0x0009)
-  }
+/**
+ *
+ */
+export function transactionSignatureView(buffer: ArrayBuffer): Uint32Array {
+  return new Uint32Array(buffer, 0x34, 1) // 4 * 1 = 4 bytes
+}
 
-  /**
-   * Header Signature (8 bytes)
-   * This 8 bytes array should always be equal to
-   * 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1
-   */
-  public headerSignatureView: Uint8Array
+/**
+ *
+ * @param buffer
+ */
+export function miniSectorCutoffView(buffer: ArrayBuffer): Uint32Array {
+  return new Uint32Array(buffer, 0x38, 1) // 4 * 1 = 4 bytes
+}
 
-  /**
-   * Header CLSID (16 bytes)
-   * Should be always contain zeros
-   */
-  public headerClsidView: Uint32Array
+/**
+ *
+ */
+export function miniFatStartView(buffer: ArrayBuffer): Uint32Array {
+  return new Uint32Array(buffer, 0x3C, 1) // 4 * 1 = 4 bytes
+}
 
-  /**
-   * Minor version
-   */
-  public minorVersionView: Uint16Array
+/**
+ *
+ * @param buffer
+ */
+export function miniFatChainLengthView(buffer: ArrayBuffer): Uint32Array {
+  return new Uint32Array(buffer, 0x40, 1) // 4 * 1 = 4 bytes
+}
 
-  /**
-   * Major version
-   */
-  public majorVersionView: Uint16Array
+/**
+ *
+ * @param buffer
+ */
+export function difatChainStartView(buffer: ArrayBuffer): Uint32Array {
+  return new Uint32Array(buffer, 0x44, 1) // 4 * 1 = 4 bytes
+}
 
-  /**
-   * Bytes order
-   */
-  public bytesOrderView: Uint8Array
+export function difatChainLengthView(buffer: ArrayBuffer): Uint32Array {
+  return new Uint32Array(buffer, 0x48, 1) // 4 * 1 = 4 bytes
+}
 
-  /**
-   * Sector shift
-   */
-  public sectorShiftView: Uint16Array
+export function initialDifatChainView(buffer: ArrayBuffer): Uint32Array {
+  return new Uint32Array(buffer, 0x4C, 109) // 4 * 109 = 436 bytes
+}
 
-  /**
-   * Mini sector shift
-   */
-  public miniSectorShiftView: Uint16Array
+export function remainingSpaceView(buffer: ArrayBuffer): Uint32Array {
+    return new Uint32Array(buffer, 512, 3584) // 512 === 1 << 0x9 and (1 << 0xc) - (1 << 0x9) === 3584
+}
 
-  /**
-   * Reserved
-   */
-  public reservedView: Uint16Array
+function resetHeader(buffer: ArrayBuffer): void {
+    headerSignatureView(buffer).set([0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1])
+    headerClsidView(buffer).fill(0)
+    minorVersionView(buffer).fill(0x003E)
+    bytesOrderView(buffer).fill(0xFFFE)
+    miniSectorShiftView(buffer).fill(0x0006)
+    reservedView(buffer).fill(0)
+    directoryChainLengthView(buffer).fill(0)
+    fatChainLengthView(buffer).fill(0)
+    directoryChainStartView(buffer).fill(SectorType.ENDOFCHAIN)
+    transactionSignatureView(buffer).fill(0)
+    miniSectorCutoffView(buffer).fill(0x00001000)
+    miniFatStartView(buffer).fill(SectorType.ENDOFCHAIN)
+    miniFatChainLengthView(buffer).fill(0)
+    difatChainStartView(buffer).fill(SectorType.ENDOFCHAIN)
+    difatChainLengthView(buffer).fill(0)
+    initialDifatChainView(buffer).fill(SectorType.FREESECT)
+}
 
-  /**
-   * Directory chain length
-   */
-  public directoryChainLengthView: Uint32Array
+export function resetHeaderV3(buffer: ArrayBuffer): void {
+    resetHeader(buffer)
+    majorVersionView(buffer).fill(0x0003)
+    sectorShiftView(buffer).fill(0x0009)
+}
 
-  /**
-   * Fat chain length
-   */
-  public fatChainLengthView: Uint32Array
-
-  /**
-   * Directory chain start
-   */
-  public directoryChainStartView: Uint32Array
-
-  /**
-   * Transaction signature
-   */
-  public transactionSignatureView: Uint32Array
-
-  /**
-   * Mini sectors cutoff
-   */
-  public miniSectorCutoff: Uint32Array
-
-  /**
-   * Mini fat start
-   */
-  public miniFatStart: Uint32Array
-
-  /**
-   * Mini fat chain length
-   */
-  public miniFatChainLength: Uint32Array
-
-  /**
-   * Difat chain start
-   */
-  public difatChainStart: Uint32Array
-
-  /**
-   * Difat chain length
-   */
-  public difatChainLength: Uint32Array
-
-  /**
-   * Initial Difat chain
-   */
-  public initialDifatChain: Uint32Array
-
-  /**
-   * Remaining empty space
-   */
-  public get remainingSpace(): Uint32Array {
-    // tslint:disable-next-line:no-bitwise
-    return new Uint32Array(this.buffer, 1 << 0x9, (1 << 0xc) - (1 << 0x9))
-  }
+export function resetHeaderV4(buffer: ArrayBuffer): void {
+    resetHeader(buffer)
+    majorVersionView(buffer).fill(0x0004)
+    sectorShiftView(buffer).fill(0x000c)
+    remainingSpaceView(buffer).fill(0)
 }

@@ -1,6 +1,7 @@
 dist/
 build/
 node-build/
+ci-cache-key
 
 # Created by https://www.gitignore.io/api/node,visualstudiocode,macos
 

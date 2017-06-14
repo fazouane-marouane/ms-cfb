@@ -8,16 +8,19 @@ jobs:
       - checkout
       - run:
           name: version
-          command: 'node --version && npm --version'
+          command: node --version && npm --version
+      - run:
+          name: generating a whitespaces-free lockfile
+          command: tr -d ' \t\n\r\f' < package-lock.json > ci-cache-key
       - restore_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
+          key: dependency-cache-{{ checksum "ci-cache-key" }}
       - run:
           name: install-npm-wee
           command: npm install
       - save_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
+          key: dependency-cache-{{ checksum "ci-cache-key" }}
           paths:
-            - .node_modules
+            - ./node_modules
       - run:
           name: build
           command: npm run build

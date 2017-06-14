@@ -20,9 +20,11 @@ export class DirectoryEntryView {
 
   public check(): boolean {
     const chars = Array.from(this.directoryEntryNameView.values())
+    const indexOfZero = chars.indexOf(0)
+    const nameLength = this.nameLength
 
     return ((this.directoryEntryNameLengthView[0] % 2 === 0) &&
-      chars.indexOf(0) === this.nameLength)
+      ((indexOfZero === 0 && nameLength === -1) || indexOfZero === this.nameLength))
   }
 
   public get name(): string {
@@ -33,7 +35,7 @@ export class DirectoryEntryView {
   }
 
   public get nameLength(): number {
-    return this.directoryEntryNameLengthView[0] / 2
+    return this.directoryEntryNameLengthView[0] / 2 - 1
   }
 
   public get startingSectorLocation(): number {

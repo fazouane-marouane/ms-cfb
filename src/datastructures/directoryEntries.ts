@@ -5,11 +5,19 @@ import { ObjectType, SectorType, StreamType } from './enums'
 
 /**
  * Interpret a `buffer` into a sequence of `DirectoryEntryView`s. Unallocated CFB objects are simply ignored.
+ *
  * @param buffer The buffer to be turned into a sequence of cfb entries
  */
 export function getDirectoryEntries(buffer: ArrayBuffer): DirectoryEntryView[] {
   return chunkBuffer(buffer, 128)
-    .map((chunk: ArrayBuffer) => new DirectoryEntryView(chunk))
+    .map((chunk: ArrayBuffer, index: number) => {
+      const entry = new DirectoryEntryView(chunk)
+      if (!entry.check()) {
+        throw new Error(`Directory entry ${index} not properly formatted.`)
+      }
+
+      return entry
+    })
     .filter((entry: DirectoryEntryView) => entry.objectType !== ObjectType.UNALLOCATED)
 }
 

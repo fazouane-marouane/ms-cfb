@@ -1,5 +1,9 @@
 {
   "critics": {
     "lint": {"engine": "tslint"}
-  }
+  },
+  "ignore": [
+    "neutrino.override.js",
+    "examples/**"
+  ]
 }

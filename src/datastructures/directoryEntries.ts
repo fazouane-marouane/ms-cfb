@@ -22,7 +22,7 @@ export function getDirectoryEntries(buffer: ArrayBuffer): DirectoryEntry[] {
 }
 
 /**
- * Traverse a red-black tree in the following order ROOT-LEFT-RIGHT.
+ * Traverse a red-black tree in the natural order LEFT-ROOT-RIGHT.
  *
  * This function is purposefully not implemented in a recursive manner to avoid stack-overflows caused by deep recursions.
  *
@@ -34,23 +34,27 @@ export function getDirectoryEntries(buffer: ArrayBuffer): DirectoryEntry[] {
 function redBlackTreeTraversal(rootId: number, entries: DirectoryEntry[],
   fileCallback: (entry: DirectoryEntry) => void,
   directoryCallback: (entry: DirectoryEntry, id: number) => void): void {
-  const toExplore: number[] = [rootId]
+  const toExplore: { id: number, visited: boolean }[] = [{ id: rootId, visited: false }]
   while (toExplore.length > 0) {
     // tslint:disable-next-line:no-non-null-assertion
-    const currentIndex = toExplore.pop()!
+    const { id: currentIndex, visited } = toExplore.pop()!
     const currentEntry = entries[currentIndex]
-    if (currentEntry.getObjectType() === ObjectType.STREAM) {
-      fileCallback(currentEntry)
+    if (visited) {
+      if (currentEntry.getObjectType() === ObjectType.STREAM) {
+        fileCallback(currentEntry)
+      } else {
+        directoryCallback(currentEntry, currentIndex)
+      }
     } else {
-      directoryCallback(currentEntry, currentIndex)
-    }
-    const leftId = currentEntry.getLeftId()
-    const rightId = currentEntry.getRightId()
-    if (leftId !== StreamType.NOSTREAM) {
-      toExplore.unshift(leftId)
-    }
-    if (rightId !== StreamType.NOSTREAM) {
-      toExplore.push(rightId)
+      const rightId = currentEntry.getRightId()
+      if (rightId !== StreamType.NOSTREAM) {
+        toExplore.push({ id: rightId, visited: false })
+      }
+      toExplore.push({ id: currentIndex, visited: true })
+      const leftId = currentEntry.getLeftId()
+      if (leftId !== StreamType.NOSTREAM) {
+        toExplore.push({id: leftId, visited: false})
+      }
     }
   }
 }
@@ -112,13 +116,13 @@ export function buildHierarchy(entries: DirectoryEntry[], miniSectorCutoff: numb
         chains = miniFatChain
       }
       const sectorId = entry.getStartingSectorLocation()
-    // tslint:disable-next-line:no-non-null-assertion
+      // tslint:disable-next-line:no-non-null-assertion
       directories.get(parentId)!.files.set(entry.getName(), new VirtualFile(
         sectorId <= SectorType.MAXREGSECT ? assertIsDefined(chains.get(sectorId)).slice(0, streamSize) :
           new Uint8Array(0).buffer))
     },
     (entry: DirectoryEntry, entryId: number, parentId: number) => {
-    // tslint:disable-next-line:no-non-null-assertion
+      // tslint:disable-next-line:no-non-null-assertion
       directories.get(parentId)!.subdirectories.set(entry.getName(), directories.get(entryId)!)
     })
 

@@ -54,6 +54,7 @@
     "neutrino": "^5.9.0",
     "neutrino-preset-ts": "^1.5.5",
     "npm-run-all": "^4.0.2",
+    "source-map-support": "^0.4.15",
     "tslint": "^5.4.3",
     "tslint-microsoft-contrib": "^5.0.0",
     "typescript": "^2.3.4"
@@ -62,6 +63,5 @@
     "./build",
     "./dist"
   ],
-  "dependencies": {
-  }
+  "dependencies": {}
 }

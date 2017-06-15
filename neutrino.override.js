@@ -6,6 +6,7 @@ module.exports = neutrino => {
   const defaultTsEntry = join(neutrino.options.source, 'index.ts')
   neutrino.options.output = './dist'
   neutrino.config
+    .devtool('source-map')
     .output
       .path(neutrino.options.output)
       .library('msCFB')

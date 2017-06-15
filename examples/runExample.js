@@ -1,3 +1,4 @@
+require('source-map-support').install();
 let readFileSync = require('fs').readFileSync
 let { readFromNodeBuffer } = require('../node-build')
 
@@ -59,12 +60,12 @@ function processFile(filename) {
   ].join('\t'))
   cfb.directoryEntries.forEach((entry, index) => {
     console.log([index,
-      rightpad(entry.name, 32),
-      ignoreSpecialValues(entry.startingSectorLocation),
-      entry.streamSize,
-      leftpad(ignoreSpecialValues(entry.leftSiblingId), 8),
-      leftpad(ignoreSpecialValues(entry.rightSiblingId), 8),
-      leftpad(ignoreSpecialValues(entry.childId), 8)
+      rightpad(entry.getName(), 32),
+      ignoreSpecialValues(entry.getStartingSectorLocation()),
+      entry.getStreamSize(),
+      leftpad(ignoreSpecialValues(entry.getLeftId()), 8),
+      leftpad(ignoreSpecialValues(entry.getRightId()), 8),
+      leftpad(ignoreSpecialValues(entry.getChildId()), 8)
     ].join('\t'))
   })
 

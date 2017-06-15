@@ -35,7 +35,11 @@ export class DirectoryEntry {
   }
 
   public getStreamSize(): number {
-    return streamSizeView(this.buffer)[0]
+    // read 64-bit integer as two 32-bit integers
+    const sizeArray = streamSizeView(this.buffer)
+
+    // least-significant-4-bytes + most-significant-4-bytes * Math.pow(2, 32)
+    return sizeArray[0] + sizeArray[1] * 0x100000000
   }
 
   public getLeftId(): number {

@@ -1,5 +1,5 @@
 import { assertIsDefined, chunkBuffer } from '../helpers'
-import { VirtualDirectory, VirtualFile } from './directory'
+import { DirectoryDescription, FileDescription } from './directory'
 import { DirectoryEntry } from './directoryEntry'
 import { ObjectType, SectorType, StreamType } from './enums'
 
@@ -101,11 +101,11 @@ function completeDirectoryTreeTraversal(rootId: number, entries: DirectoryEntry[
  * @param miniFatChain Collection of file streams which can be retrieved by the position of their first sector in the MiniFAT.
  */
 export function buildHierarchy(entries: DirectoryEntry[], miniSectorCutoff: number,
-  fatChain: Map<number, ArrayBuffer>, miniFatChain: Map<number, ArrayBuffer>): VirtualDirectory {
-  const directories = new Map<number, VirtualDirectory>()
+  fatChain: Map<number, ArrayBuffer>, miniFatChain: Map<number, ArrayBuffer>): DirectoryDescription {
+  const directories = new Map<number, DirectoryDescription>()
   entries.forEach((entry: DirectoryEntry, index: number) => {
     if (entry.getObjectType() !== ObjectType.STREAM) {
-      directories.set(index, new VirtualDirectory())
+      directories.set(index, new DirectoryDescription())
     }
   })
   completeDirectoryTreeTraversal(0, entries,
@@ -117,7 +117,7 @@ export function buildHierarchy(entries: DirectoryEntry[], miniSectorCutoff: numb
       }
       const sectorId = entry.getStartingSectorLocation()
       // tslint:disable-next-line:no-non-null-assertion
-      directories.get(parentId)!.files.set(entry.getName(), new VirtualFile(
+      directories.get(parentId)!.files.set(entry.getName(), new FileDescription(
         sectorId <= SectorType.MAXREGSECT ? assertIsDefined(chains.get(sectorId)).slice(0, streamSize) :
           new Uint8Array(0).buffer))
     },

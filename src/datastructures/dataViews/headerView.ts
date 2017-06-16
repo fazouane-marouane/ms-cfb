@@ -163,12 +163,20 @@ function resetHeader(buffer: ArrayBuffer): void {
     initialDifatChainView(buffer).fill(SectorType.FREESECT)
 }
 
+/**
+ *
+ * @param buffer
+ */
 export function resetHeaderV3(buffer: ArrayBuffer): void {
     resetHeader(buffer)
     majorVersionView(buffer).fill(0x0003)
     sectorShiftView(buffer).fill(0x0009)
 }
 
+/**
+ *
+ * @param buffer
+ */
 export function resetHeaderV4(buffer: ArrayBuffer): void {
     resetHeader(buffer)
     majorVersionView(buffer).fill(0x0004)

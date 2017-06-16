@@ -1,6 +1,6 @@
 import { chunkBuffer } from '../helpers'
-import { getPartialDifatArray, getNextDifatSectorIndex } from './dataViews'
-import { VirtualDirectory, VirtualFile } from './directory'
+import { getNextDifatSectorIndex, getPartialDifatArray } from './dataViews'
+import { DirectoryDescription } from './directory'
 import { buildHierarchy, getDirectoryEntries } from './directoryEntries'
 import { DirectoryEntry } from './directoryEntry'
 import { ObjectType, SectorType, StreamType } from './enums'
@@ -25,11 +25,20 @@ export class CFB {
       this.fatChain, this.miniFatChain)
   }
 
+  /**
+   *
+   * @param buffer
+   * @param header
+   */
   private buildSectors(buffer: ArrayBuffer, header: Header): void {
     const sectorSize = header.sectorSize()
     this.sectors = chunkBuffer(buffer.slice(sectorSize), sectorSize)
   }
 
+  /**
+   *
+   * @param header
+   */
   private buildFatSectors(header: Header): void {
     const visitedSectors = new Set<number>()
     const {sectors} = this
@@ -45,6 +54,11 @@ export class CFB {
     this.fatChain = getFatChains(fatSectors, sectors)
   }
 
+  /**
+   *
+   * @param visitedSectors
+   * @param header
+   */
   private getDifatArray(visitedSectors: Set<number>, header: Header): number[] {
     const result = header.getInitialDifat()
     let currentIndex = header.getStartOfDifat()
@@ -66,6 +80,10 @@ export class CFB {
       .filter((sectorNumber: number) => sectorNumber <= SectorType.MAXREGSECT)
   }
 
+  /**
+   *
+   * @param header
+   */
   private buildDirectoryEntries(header: Header): void {
     const startOfDirectoryChain = header.getStartOfDirectoryChain()
     const {fatChain} = this
@@ -78,6 +96,10 @@ export class CFB {
     }
   }
 
+  /**
+   *
+   * @param header
+   */
   private buildMiniFatSectors(header: Header): void {
     const startOfMiniFat = header.getStartOfMiniFat()
     const {fatChain, directoryEntries} = this
@@ -109,5 +131,5 @@ export class CFB {
 
   public directoryEntries: DirectoryEntry[]
 
-  public root: VirtualDirectory
+  public root: DirectoryDescription
 }

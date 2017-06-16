@@ -9,6 +9,9 @@ class LinkedChainNode {
   constructor(public value: number, public next: LinkedChainNode | null = null) {
   }
 
+  /**
+   *
+   */
   public toArray(): number[] {
     const visitedNodes = new Set<number>()
     const result: number[] = []
@@ -25,6 +28,10 @@ class LinkedChainNode {
   }
 }
 
+/**
+ *
+ * @param partialFatArrays
+ */
 function buildChains(partialFatArrays: ArrayBuffer[]): number[][] {
   const chainsNodes = new Map<number, LinkedChainNode>()
   const chainsHeadNodes = new Map<number, LinkedChainNode>()

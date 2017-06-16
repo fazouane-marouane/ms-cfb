@@ -9,6 +9,9 @@ import { bytesOrderView, difatChainStartView, directoryChainLengthView,
   reservedView, resetHeaderV3, resetHeaderV4, sectorShiftView } from './dataViews'
 import { SectorType } from './enums'
 
+/**
+ *
+ */
 export class Header {
   constructor(private buffer: ArrayBuffer) {
   }

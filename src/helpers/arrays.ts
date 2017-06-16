@@ -21,3 +21,7 @@ export function arraysAreEqual<T>(fst: T[], snd: T[]) : boolean {
 export function concat<T>(arrays: T[][]): T[] {
   return Array.prototype.concat(...arrays)
 }
+
+export function range(start: number, stop: number): number[] {
+  return Array.from(Array(stop - start).keys()).map((value: number) => value + start)
+}

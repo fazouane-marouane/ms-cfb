@@ -1,3 +1,5 @@
+import { range } from './arrays'
+
 /**
  * Split a `buffer` into an array of chunks of same length of `chunkSize`.
  * If `buffer` can't be split evenly, the final chunk will be the remaining elements.
@@ -10,7 +12,7 @@ export function chunkBuffer(buffer: ArrayBuffer, chunkSize: number): ArrayBuffer
   const nthEntryStart = (index: number): number => chunkSize * index
   const slicedBuffer = (index: number): ArrayBuffer => buffer.slice(nthEntryStart(index), nthEntryStart(index + 1))
 
-  return Array.from(Array(numberOfChunks).keys())
+  return range(0, numberOfChunks)
     // tslint:disable-next-line:no-unnecessary-callback-wrapper
     .map((index: number): ArrayBuffer => slicedBuffer(index))
 }

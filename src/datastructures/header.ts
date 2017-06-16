@@ -9,6 +9,10 @@ import { bytesOrderView, difatChainStartView, directoryChainLengthView,
   reservedView, resetHeaderV3, resetHeaderV4, sectorShiftView } from './dataViews'
 import { SectorType } from './enums'
 
+function throwError(message: string): never {
+  throw new Error(message)
+}
+
 /**
  *
  */
@@ -16,95 +20,127 @@ export class Header {
   constructor(private buffer: ArrayBuffer) {
   }
 
-  public check(): boolean {
+  public check(): void | never {
     const version = this.version()
     const bytesOrder = this.bytesOrder()
     const sectorSize = this.sectorSize()
     const { buffer } = this
 
-    return (
-      arraysAreEqual(this.signature(), [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1]) &&
-      (version === '3.62' || version === '4.62') &&
-      headerClsidView(buffer).every((value: number) => value === 0) &&
-      (arraysAreEqual(bytesOrder, [0xFF, 0xFE]) || arraysAreEqual(bytesOrder, [0xFE, 0xFF])) &&
-      imply(version === '3.62', sectorSize === 512) &&
-      imply(version === '4.62', sectorSize === 4096) &&
-      this.miniSectorSize() === 64 &&
-      reservedView(buffer).every((value: number) => value === 0) &&
-      imply(version === '3.62', directoryChainLengthView(buffer)[0] === 0) &&
-      this.miniSectorCutoff() === 4096 &&
-      this.checkDifat() &&
-      imply(version === '4.62', () => remainingSpaceView(buffer).every((value: number) => value === 0))
-    )
+    if (!arraysAreEqual(this.signature(), [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1])) {
+      throwError('wrong header signature')
+    }
+    if (version !== '3.62' && version !== '4.62') {
+      throwError('wrong version')
+    }
+    if (!headerClsidView(buffer).getValue().every((value: number) => value === 0)) {
+      throwError('wrong clsid')
+    }
+    if (bytesOrder !== 0xFFFE && bytesOrder !== 0xFEFF) {
+      throwError('wrong bytes order')
+    }
+    if (version === '3.62' && sectorSize !== 512) {
+      throwError('wrong sector size')
+    }
+    if (version === '4.62' && sectorSize !== 4096) {
+      throwError('wrong sector size')
+    }
+    if (this.miniSectorSize() !== 64) {
+      throwError('wrong minisector size')
+    }
+    if (!reservedView(buffer).getValue().every((value: number) => value === 0)) {
+      throwError('wrong reserved')
+    }
+    if (version === '3.62' && directoryChainLengthView(buffer).getValue() !== 0) {
+      throwError('wrong directory chain length')
+    }
+    if (this.miniSectorCutoff() !== 4096) {
+      throwError('wrong minisector cutoff')
+    }
+    if (version === '4.62' && !remainingSpaceView(buffer).getValue().every((value: number) => value === 0)) {
+      throwError('wrong remaining space')
+    }
+    this.checkDifat()
   }
 
   private checkDifat(): boolean {
     const initialDifat = this.getInitialDifat()
     const numberOfFatSectors = this.getNumberOfFatSectors()
     const endOfInitialDifat = initialDifat.indexOf(SectorType.FREESECT)
+    const startOfDifat = this.getStartOfDifat()
     if (endOfInitialDifat === -1) {
-      return (
-        this.getStartOfDifat() !== SectorType.ENDOFCHAIN &&
-        initialDifat.every((value: number) => value <= SectorType.MAXREGSECT) &&
-        initialDifat.length < numberOfFatSectors
-      )
+      if (startOfDifat === SectorType.ENDOFCHAIN) {
+        throwError('wrong start of difat')
+      }
+      if (!initialDifat.every((value: number) => value <= SectorType.MAXREGSECT)) {
+        throwError('wrong initial difat')
+      }
+      if (initialDifat.length >= numberOfFatSectors) {
+        throwError('wrong number of fat sectors')
+      }
+
+      return true
     }
     const firstSliceOfInitialDifat = initialDifat.slice(0, endOfInitialDifat)
     const secondSliceOfInitialDifat = initialDifat.slice(endOfInitialDifat)
 
-    return (
-      firstSliceOfInitialDifat.every((value: number) => value <= SectorType.MAXREGSECT) &&
-      secondSliceOfInitialDifat.every((value: number) => value === SectorType.FREESECT) &&
-      firstSliceOfInitialDifat.length === numberOfFatSectors
-    )
+    if (startOfDifat !== SectorType.ENDOFCHAIN) {
+      throwError('wrong start of difat')
+    }
+    if (!firstSliceOfInitialDifat.every((value: number) => value <= SectorType.MAXREGSECT) ||
+      !secondSliceOfInitialDifat.every((value: number) => value === SectorType.FREESECT)) {
+      throwError('wrong initial difat')
+    }
+    if (firstSliceOfInitialDifat.length !== numberOfFatSectors) {
+      throwError('wrong number of fat sectors')
+    }
+
+    return true
   }
 
   private signature(): number[] {
-    return Array.from(headerSignatureView(this.buffer).values())
+    return headerSignatureView(this.buffer).getValue()
   }
 
   private version(): string {
-    return `${majorVersionView(this.buffer)[0]}.${minorVersionView(this.buffer)[0]}`
+    return `${majorVersionView(this.buffer).getValue()}.${minorVersionView(this.buffer).getValue()}`
   }
 
   public getStartOfMiniFat(): number {
-    return miniFatStartView(this.buffer)[0]
+    return miniFatStartView(this.buffer).getValue()
   }
 
   public getStartOfDifat(): number {
-    return difatChainStartView(this.buffer)[0]
+    return difatChainStartView(this.buffer).getValue()
   }
 
   public getStartOfDirectoryChain(): number {
-    return directoryChainStartView(this.buffer)[0]
+    return directoryChainStartView(this.buffer).getValue()
   }
 
   public getInitialDifat(): number[] {
-    return Array.from(initialDifatChainView(this.buffer).values())
+    return initialDifatChainView(this.buffer).getValue()
   }
 
   public miniSectorCutoff(): number {
-    return miniSectorCutoffView(this.buffer)[0]
+    return miniSectorCutoffView(this.buffer).getValue()
   }
 
   public sectorSize(): number {
     // tslint:disable-next-line:no-bitwise
-    return 1 << sectorShiftView(this.buffer)[0]
+    return 1 << sectorShiftView(this.buffer).getValue()
   }
 
   private getNumberOfFatSectors(): number {
-    return fatChainLengthView(this.buffer)[0]
+    return fatChainLengthView(this.buffer).getValue()
   }
 
   public miniSectorSize(): number {
     // tslint:disable-next-line:no-bitwise
-    return 1 << miniSectorShiftView(this.buffer)[0]
+    return 1 << miniSectorShiftView(this.buffer).getValue()
   }
 
-  public bytesOrder(): [number, number] {
-    const bytesOrder = bytesOrderView(this.buffer)
-
-    return [bytesOrder[0], bytesOrder[1]]
+  public bytesOrder(): number {
+    return bytesOrderView(this.buffer).getValue()
   }
 
   public resetAsV3(): void {

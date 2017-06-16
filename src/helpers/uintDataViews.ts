@@ -12,7 +12,7 @@ export class UintDataView {
     }
   }
 
-  public getValue(littleEndianness: boolean): number {
+  public getValue(littleEndianness: boolean = true): number {
     const { dataview, byteOffset } = this
     switch (this.size) {
       case 8:
@@ -29,7 +29,7 @@ export class UintDataView {
     }
   }
 
-  public setValue(value: number, littleEndianness: boolean): void {
+  public setValue(value: number, littleEndianness: boolean = true): void {
     const { dataview, byteOffset } = this
     switch (this.size) {
       case 8:
@@ -63,15 +63,29 @@ export class UintArrayDataView {
       .map((index: number) => new UintDataView(dataview, size, index * byteSize))
   }
 
-  public getValue(littleEndianness: boolean): number[] {
+  public getValue(littleEndianness: boolean = true): number[] {
     return this.dataviews.map((dataview: UintDataView) => dataview.getValue(littleEndianness))
   }
 
-  public setValue(values: number[], littleEndianness: boolean): void {
+  public setValue(values: number[], littleEndianness: boolean = true): void {
     this.dataviews.forEach((dataview: UintDataView, index: number) => {
       dataview.setValue(values[index], littleEndianness)
     })
   }
 
+  public fill(value: number, littleEndianness: boolean = true): void {
+    this.dataviews.forEach((dataview: UintDataView) => {
+      dataview.setValue(value, littleEndianness)
+    })
+  }
+
   private dataviews: UintDataView[]
+}
+
+export function createUintDataView(buffer: ArrayBuffer, byteOffset: number, size: UintSize): UintDataView {
+  return new UintDataView(new DataView(buffer, byteOffset, size / 8), size, 0)
+}
+
+export function createUintArrayDataView(buffer: ArrayBuffer, byteOffset: number, length: number, size: UintSize): UintArrayDataView {
+  return new UintArrayDataView(new DataView(buffer, byteOffset, length * size / 8), size)
 }

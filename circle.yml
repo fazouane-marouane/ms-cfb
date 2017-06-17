@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/practical
     docker:
-      - image: darkmarouane/docker-build:0.0.4
+      - image: darkmarouane/docker-build:0.0.5
     steps:
       - checkout
       - run:

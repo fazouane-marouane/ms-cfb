@@ -22,10 +22,13 @@ export class UintDataView {
       case 32:
         return dataview.getUint32(byteOffset, littleEndianness)
       default: // 64
-        const [v1, v2] = [dataview.getUint32(byteOffset + (littleEndianness ? 0 : 4), littleEndianness),
-        dataview.getUint32(byteOffset + (littleEndianness ? 4 : 0), littleEndianness)]
+        const [v1, v2] = [dataview.getUint32(byteOffset, littleEndianness),
+        dataview.getUint32(byteOffset + 4, littleEndianness)]
 
-        return v1 * 0x100000000 + v2
+        // least-significant-4-bytes + most-significant-4-bytes * Math.pow(2, 32)
+        // when using little endian: most-significant-4-bytes === v2
+        // when using big endian: most-significant-4-bytes === v1
+        return (littleEndianness ? v2 : v1) * 0x100000000 + (littleEndianness ? v1 : v2)
     }
   }
 
@@ -43,8 +46,8 @@ export class UintDataView {
         break
       default: // 64
         // tslint:disable-next-line:no-bitwise
-        const v1 = value >>> 0
-        const v2 = value - v1
+        const v1 = value >>> 0 // least-significant-4-bytes
+        const v2 = (value - v1) / 0x100000000 // most-significant-4-bytes
         dataview.setUint32(byteOffset + (littleEndianness ? 0 : 4), v1, littleEndianness)
         dataview.setUint32(byteOffset + (littleEndianness ? 4 : 0), v2, littleEndianness)
         break

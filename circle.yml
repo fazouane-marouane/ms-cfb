@@ -3,16 +3,12 @@ jobs:
   build:
     working_directory: ~/practical
     docker:
-      - image: circleci/node:8.1.0
+      - image: darkmarouane/docker-build:0.0.4
     steps:
       - checkout
       - run:
           name: git-lfs
           command: |
-            curl -sSL https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-            apt-get update
-            apt-get install -y git-lfs
-            rm -rf /var/lib/apt/lists/*
             mkdir -p ~/.ssh
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
             ssh git@github.com git-lfs-authenticate "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}" download

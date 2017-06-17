@@ -1,6 +1,9 @@
 require('source-map-support').install();
 let readFileSync = require('fs').readFileSync
-let { readFromNodeBuffer } = require('../node-build')
+let {
+  readFromNodeBuffer
+} = require('../node-build')
+let Benchmark = require('benchmark')
 
 for (let index = 2; index < process.argv.length; index++) {
   let filename = process.argv[index]
@@ -11,15 +14,26 @@ for (let index = 2; index < process.argv.length; index++) {
 
 function processFile(filename) {
   let buffer = readFileSync(filename)
+  let bench = new Benchmark(`CFB#${filename}`, function () {
+      readFromNodeBuffer(buffer).root
+    }, {
+      defer: false,
+      onComplete: function () {
+        console.log(`number of operations per second ${bench.hz}`)
+        console.log(`mean execution time ${bench.stats.mean}`)
+        console.log(`margin of error ${bench.stats.moe}`)
+      }
+    })
+  bench.run({ 'async': false })
   let cfb = readFromNodeBuffer(buffer)
   let header = cfb.header
   let sectors = cfb.sectors
   console.log('signature', header.signature())
   console.log('version', header.version())
   console.log('bytesOrder', header.bytesOrder())
-  console.log('start of directoryChain', header.getStartOfDirectoryChain)
-  console.log('start of minifat', header.getStartOfMiniFat)
-  console.log('start of difat', header.getStartOfDifat)
+  console.log('start of directoryChain', header.getStartOfDirectoryChain())
+  console.log('start of minifat', header.getStartOfMiniFat())
+  console.log('start of difat', header.getStartOfDifat())
   console.log('sector size', header.sectorSize())
   console.log('number of fat sectors', header.getNumberOfFatSectors())
   console.log('number of sectors', sectors.length)

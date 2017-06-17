@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "@types/node": "^7.0.29",
+    "benchmark": "^2.1.4",
     "neutrino": "^5.9.0",
     "neutrino-preset-ts": "^1.5.5",
     "npm-run-all": "^4.0.2",

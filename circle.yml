@@ -15,25 +15,28 @@ jobs:
             git lfs pull
       - run:
           name: version
-          command: node --version && npm --version
+          command: node --version && npm --version && yarn --version
       - run:
           name: generating a whitespaces-free lockfile
-          command: tr -d ' \t\n\r\f' < package-lock.json > ci-cache-key
+          command: tr -d ' \t\n\r\f' < yarn.lock > ci-cache-key
       - restore_cache:
           key: dependency-cache-{{ checksum "ci-cache-key" }}
       - run:
-          name: install-npm-wee
-          command: npm install
+          name: yarn-install
+          command: |
+            export NODE_ENV="development"
+            yarn install
+            export NODE_ENV="production"
       - save_cache:
           key: dependency-cache-{{ checksum "ci-cache-key" }}
           paths:
             - ./node_modules
       - run:
           name: build
-          command: npm run build
+          command: yarn run build
       - run:
           name: build-node
-          command: npm run build:node
+          command: yarn run build:node
       - run:
           name: test
-          command: npm run start
+          command: yarn run start

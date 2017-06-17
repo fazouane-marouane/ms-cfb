@@ -1,0 +1,8 @@
+{
+  "extends": "eslint-config-airbnb-base",
+  "rules": {
+    "linebreak-style": ["error", "windows"],
+    "semi": ["error", "never"]
+  },
+  "root": true
+}

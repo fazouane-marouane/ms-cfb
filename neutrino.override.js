@@ -1,10 +1,12 @@
-const { path, pathOr } = require('ramda')
-const { join, dirname } = require('path')
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable indent */
+const { pathOr } = require('ramda')
+const { join } = require('path')
 
-module.exports = neutrino => {
+module.exports = (neutrino) => {
   const defaultEntry = join(neutrino.options.source, 'index.js')
   const defaultTsEntry = join(neutrino.options.source, 'index.ts')
-  neutrino.options.output = './dist'
+  neutrino.options.output = './dist' // eslint-disable-line no-param-reassign
   neutrino.config
     .devtool('source-map')
     .output
@@ -19,7 +21,7 @@ module.exports = neutrino => {
       .delete('chunk')
       .delete('named-modules')
       .end()
-    .when(process.env.NODE_ENV === 'development', config => {
+    .when(process.env.NODE_ENV === 'development', (config) => {
       const protocol = process.env.HTTPS ? 'https' : 'http'
       const host = process.env.HOST || pathOr('localhost', ['options', 'config', 'devServer', 'host'], neutrino)
       const port = process.env.PORT || pathOr(5000, ['options', 'config', 'devServer', 'port'], neutrino)

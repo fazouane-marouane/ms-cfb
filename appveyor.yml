@@ -14,7 +14,7 @@ cache:
 - node_modules
 build_script:
 - cmd: >-
-    yarn install
+    yarn install --frozen-lockfile
 
     yarn run build
 

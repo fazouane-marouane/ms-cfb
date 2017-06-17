@@ -7,13 +7,17 @@ install:
     node --version
 
     npm --version
-cache: node_modules
+
+    yarn --version
+cache:
+- "%LOCALAPPDATA%\\Yarn"
+- node_modules
 build_script:
 - cmd: >-
-    npm install
+    yarn install
 
-    npm run build
+    yarn run build
 
-    npm run build:node
+    yarn run build:node
 test_script:
-- cmd: npm run start
+- cmd: yarn run start

@@ -1,5 +1,13 @@
 import { range } from './arrays'
 
+export function sliceView(view: DataView, byteOffset: number, length?: number): DataView {
+  return new DataView(view.buffer, view.byteOffset + byteOffset, length)
+}
+
+export function sliceInnerBuffer(view: DataView, byteOffset: number, length?: number): ArrayBuffer {
+  return view.buffer.slice(view.byteOffset + byteOffset, length)
+}
+
 /**
  * Split a `buffer` into an array of chunks of same length of `chunkSize`.
  * If `buffer` can't be split evenly, the final chunk will be the remaining elements.
@@ -7,14 +15,16 @@ import { range } from './arrays'
  * @param {ArrayBuffer} buffer The buffer to process
  * @param {number} chunkSize The length of each chunk
  */
-export function chunkBuffer(buffer: ArrayBuffer, chunkSize: number): ArrayBuffer[] {
-  const numberOfChunks: number = Math.ceil(buffer.byteLength / chunkSize)
-  const nthEntryStart = (index: number): number => chunkSize * index
-  const slicedBuffer = (index: number): ArrayBuffer => buffer.slice(nthEntryStart(index), nthEntryStart(index + 1))
+export function chunkBuffer(view: DataView, chunkSize: number): DataView[] {
+  const numberOfFixedSizeChunks = Math.floor(view.byteLength / chunkSize)
+  const remainingBytes = view.byteLength % chunkSize
+  const result = range(0, numberOfFixedSizeChunks)
+    .map((index: number): DataView => sliceView(view, chunkSize * index, chunkSize))
+  if (remainingBytes > 0) {
+    result.push(sliceView(view, chunkSize * numberOfFixedSizeChunks, remainingBytes))
+  }
 
-  return range(0, numberOfChunks)
-    // tslint:disable-next-line:no-unnecessary-callback-wrapper
-    .map((index: number): ArrayBuffer => slicedBuffer(index))
+  return result
 }
 
 /**
@@ -22,17 +32,17 @@ export function chunkBuffer(buffer: ArrayBuffer, chunkSize: number): ArrayBuffer
  *
  * @param buffers buffers to be joined
  */
-export function joinBuffers(buffers: ArrayBuffer[]): ArrayBuffer {
-  const totalBytes = buffers.map((buffer: ArrayBuffer): number => buffer.byteLength)
+export function joinViews(views: DataView[]): DataView {
+  const totalBytes = views.map((view: DataView): number => view.byteLength)
     .reduce((acc: number, val: number): number => acc + val)
   const tmp = new Uint8Array(totalBytes)
-  buffers.reduce(
-    (accumulatedByteLength: number, buffer: ArrayBuffer): number => {
-      tmp.set(new Uint8Array(buffer), accumulatedByteLength)
+  views.reduce(
+    (accumulatedByteLength: number, view: DataView): number => {
+      tmp.set(new Uint8Array(view.buffer, view.byteOffset, view.byteLength), accumulatedByteLength)
 
-      return accumulatedByteLength + buffer.byteLength
+      return accumulatedByteLength + view.byteLength
     },
     0)
 
-  return tmp.buffer
+  return new DataView(tmp.buffer)
 }

@@ -2,4 +2,3 @@
 export * from './arrayBufferOperators'
 export * from './arrays'
 export * from './asserts'
-export * from './imply'

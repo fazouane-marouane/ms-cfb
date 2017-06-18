@@ -1,4 +1,4 @@
-import { assertIsDefined, chunkBuffer } from '../helpers'
+import { assertIsDefined, chunkBuffer, sliceInnerBuffer } from '../helpers'
 import { DirectoryDescription, FileDescription } from './directory'
 import { DirectoryEntry } from './directoryEntry'
 import { ObjectType, SectorType, StreamType } from './enums'
@@ -8,9 +8,9 @@ import { ObjectType, SectorType, StreamType } from './enums'
  *
  * @param buffer The buffer to be turned into a sequence of cfb entries
  */
-export function getDirectoryEntries(buffer: ArrayBuffer): DirectoryEntry[] {
+export function getDirectoryEntries(buffer: DataView): DirectoryEntry[] {
   return chunkBuffer(buffer, 128)
-    .map((chunk: ArrayBuffer, index: number) => {
+    .map((chunk: DataView, index: number) => {
       const entry = new DirectoryEntry(chunk)
       if (!entry.check()) {
         throw new Error(`Directory entry ${index} not properly formatted.`)
@@ -101,7 +101,7 @@ function completeDirectoryTreeTraversal(rootId: number, entries: DirectoryEntry[
  * @param miniFatChain Collection of file streams which can be retrieved by the position of their first sector in the MiniFAT.
  */
 export function buildHierarchy(entries: DirectoryEntry[], miniSectorCutoff: number,
-  fatChain: Map<number, ArrayBuffer>, miniFatChain: Map<number, ArrayBuffer>): DirectoryDescription {
+  fatChain: Map<number, DataView>, miniFatChain: Map<number, DataView>): DirectoryDescription {
   const directories = new Map<number, DirectoryDescription>()
   entries.forEach((entry: DirectoryEntry, index: number) => {
     if (entry.getObjectType() !== ObjectType.STREAM) {
@@ -118,8 +118,8 @@ export function buildHierarchy(entries: DirectoryEntry[], miniSectorCutoff: numb
       const sectorId = entry.getStartingSectorLocation()
       // tslint:disable-next-line:no-non-null-assertion
       directories.get(parentId)!.files.set(entry.getName(), new FileDescription(
-        sectorId <= SectorType.MAXREGSECT ? assertIsDefined(chains.get(sectorId)).slice(0, streamSize) :
-          new Uint8Array(0).buffer))
+        sectorId <= SectorType.MAXREGSECT ? sliceInnerBuffer(assertIsDefined(chains.get(sectorId)), 0, streamSize) :
+          new ArrayBuffer(0)))
     },
     (entry: DirectoryEntry, entryId: number, parentId: number) => {
       // tslint:disable-next-line:no-non-null-assertion

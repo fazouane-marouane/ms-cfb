@@ -1,4 +1,4 @@
-import { concat, joinBuffers } from '../helpers'
+import { concat, joinViews } from '../helpers'
 import { getPartialFatArray } from './dataViews'
 import { SectorType } from './enums'
 
@@ -32,7 +32,7 @@ class LinkedChainNode {
  *
  * @param partialFatArrays
  */
-function buildChains(partialFatArrays: ArrayBuffer[]): number[][] {
+function buildChains(partialFatArrays: DataView[]): number[][] {
   const chainsNodes = new Map<number, LinkedChainNode>()
   const chainsHeadNodes = new Map<number, LinkedChainNode>()
   const completeFatArray: number[] = concat(partialFatArrays.map(getPartialFatArray))
@@ -67,12 +67,12 @@ function buildChains(partialFatArrays: ArrayBuffer[]): number[][] {
 /**
  *
  */
-export function getFatChains(partialFatArrays: ArrayBuffer[], sectors: ArrayBuffer[]): Map<number, ArrayBuffer> {
-  const chains = new Map<number, ArrayBuffer>()
+export function getFatChains(partialFatArrays: DataView[], sectors: DataView[]): Map<number, DataView> {
+  const chains = new Map<number, DataView>()
   buildChains(partialFatArrays)
     .forEach((chainIndices: number[]) => {
       const sectorsChain = chainIndices.map((index: number) => sectors[index])
-      chains.set(chainIndices[0], joinBuffers(sectorsChain))
+      chains.set(chainIndices[0], joinViews(sectorsChain))
     })
 
   return chains

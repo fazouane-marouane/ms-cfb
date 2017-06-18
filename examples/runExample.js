@@ -17,8 +17,8 @@ function processFile(filename) {
     defer: false,
     onComplete: () => {
       console.log(`number of operations per second ${bench.hz}`)
-      console.log(`mean execution time ${bench.stats.mean}`)
-      console.log(`margin of error ${bench.stats.moe}`)
+      console.log(`mean execution time ${bench.stats.mean * 1000} ms`)
+      console.log(`margin of error ${bench.stats.moe * 1000} ms`)
     },
   })
   bench.run({

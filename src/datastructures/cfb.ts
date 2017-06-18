@@ -12,7 +12,7 @@ import { Header } from './header'
  */
 export class CFB {
   constructor(buffer: ArrayBuffer) {
-    const header = this.header = new Header(buffer)
+    const header = this.header = new Header(new DataView(buffer))
     header.check()
     this.buildSectors(buffer, header)
     this.buildFatSectors(header)
@@ -30,7 +30,7 @@ export class CFB {
    */
   private buildSectors(buffer: ArrayBuffer, header: Header): void {
     const sectorSize = header.sectorSize()
-    this.sectors = chunkBuffer(buffer.slice(sectorSize), sectorSize)
+    this.sectors = chunkBuffer(new DataView(buffer, sectorSize), sectorSize)
   }
 
   /**
@@ -121,11 +121,11 @@ export class CFB {
 
   public header: Header
 
-  public sectors: ArrayBuffer[]
+  public sectors: DataView[]
 
-  public fatChain: Map<number, ArrayBuffer>
+  public fatChain: Map<number, DataView>
 
-  public miniFatChain: Map<number, ArrayBuffer>
+  public miniFatChain: Map<number, DataView>
 
   public directoryEntries: DirectoryEntry[]
 

@@ -1,7 +1,7 @@
 /**
  *
  */
-import { arraysAreEqual, imply } from '../helpers'
+import { arraysAreEqual } from '../helpers'
 import { bytesOrderView, difatChainStartView, directoryChainLengthView,
   directoryChainStartView, fatChainLengthView, headerClsidView,
   headerSignatureView, initialDifatChainView, majorVersionView,
@@ -17,7 +17,7 @@ function throwError(message: string): never {
  *
  */
 export class Header {
-  constructor(private buffer: ArrayBuffer) {
+  constructor(private buffer: DataView) {
   }
 
   public check(): void | never {
@@ -32,7 +32,7 @@ export class Header {
     if (version !== '3.62' && version !== '4.62') {
       throwError('wrong version')
     }
-    if (!headerClsidView(buffer).getValue().every((value: number) => value === 0)) {
+    if (!headerClsidView(buffer).get().every((value: number) => value === 0)) {
       throwError('wrong clsid')
     }
     if (bytesOrder !== 0xFFFE && bytesOrder !== 0xFEFF) {
@@ -47,16 +47,16 @@ export class Header {
     if (this.miniSectorSize() !== 64) {
       throwError('wrong minisector size')
     }
-    if (!reservedView(buffer).getValue().every((value: number) => value === 0)) {
+    if (!reservedView(buffer).get().every((value: number) => value === 0)) {
       throwError('wrong reserved')
     }
-    if (version === '3.62' && directoryChainLengthView(buffer).getValue() !== 0) {
+    if (version === '3.62' && directoryChainLengthView(buffer).get() !== 0) {
       throwError('wrong directory chain length')
     }
     if (this.miniSectorCutoff() !== 4096) {
       throwError('wrong minisector cutoff')
     }
-    if (version === '4.62' && !remainingSpaceView(buffer).getValue().every((value: number) => value === 0)) {
+    if (version === '4.62' && !remainingSpaceView(buffer).get().every((value: number) => value === 0)) {
       throwError('wrong remaining space')
     }
     this.checkDifat()
@@ -98,49 +98,49 @@ export class Header {
   }
 
   private signature(): number[] {
-    return headerSignatureView(this.buffer).getValue()
+    return headerSignatureView(this.buffer).get()
   }
 
   private version(): string {
-    return `${majorVersionView(this.buffer).getValue()}.${minorVersionView(this.buffer).getValue()}`
+    return `${majorVersionView(this.buffer).get()}.${minorVersionView(this.buffer).get()}`
   }
 
   public getStartOfMiniFat(): number {
-    return miniFatStartView(this.buffer).getValue()
+    return miniFatStartView(this.buffer).get()
   }
 
   public getStartOfDifat(): number {
-    return difatChainStartView(this.buffer).getValue()
+    return difatChainStartView(this.buffer).get()
   }
 
   public getStartOfDirectoryChain(): number {
-    return directoryChainStartView(this.buffer).getValue()
+    return directoryChainStartView(this.buffer).get()
   }
 
   public getInitialDifat(): number[] {
-    return initialDifatChainView(this.buffer).getValue()
+    return initialDifatChainView(this.buffer).get()
   }
 
   public miniSectorCutoff(): number {
-    return miniSectorCutoffView(this.buffer).getValue()
+    return miniSectorCutoffView(this.buffer).get()
   }
 
   public sectorSize(): number {
     // tslint:disable-next-line:no-bitwise
-    return 1 << sectorShiftView(this.buffer).getValue()
+    return 1 << sectorShiftView(this.buffer).get()
   }
 
   private getNumberOfFatSectors(): number {
-    return fatChainLengthView(this.buffer).getValue()
+    return fatChainLengthView(this.buffer).get()
   }
 
   public miniSectorSize(): number {
     // tslint:disable-next-line:no-bitwise
-    return 1 << miniSectorShiftView(this.buffer).getValue()
+    return 1 << miniSectorShiftView(this.buffer).get()
   }
 
   public bytesOrder(): number {
-    return bytesOrderView(this.buffer).getValue()
+    return bytesOrderView(this.buffer).get()
   }
 
   public resetAsV3(): void {

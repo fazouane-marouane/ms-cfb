@@ -7,7 +7,7 @@ import { SectorType } from '../enums'
  *
  * @param buffer The header's buffer
  */
-export function headerSignatureView(buffer: ArrayBuffer): UintArrayDataView {
+export function headerSignatureView(buffer: DataView): UintArrayDataView {
   return createUintArrayDataView(buffer, 0x00, 8, 8) // 1 * 8 = 8 bytes
 }
 
@@ -16,7 +16,7 @@ export function headerSignatureView(buffer: ArrayBuffer): UintArrayDataView {
  *
  * @param buffer The header's buffer
  */
-export function headerClsidView(buffer: ArrayBuffer): UintArrayDataView {
+export function headerClsidView(buffer: DataView): UintArrayDataView {
   return createUintArrayDataView(buffer, 0x08, 4, 32) // 4 * 4 = 16 bytes
 }
 
@@ -25,7 +25,7 @@ export function headerClsidView(buffer: ArrayBuffer): UintArrayDataView {
  *
  * @param buffer The header's buffer
  */
-export function minorVersionView(buffer: ArrayBuffer): UintDataView {
+export function minorVersionView(buffer: DataView): UintDataView {
   return createUintDataView(buffer, 0x18, 16) // 2 * 1 = 2 bytes
 }
 
@@ -34,7 +34,7 @@ export function minorVersionView(buffer: ArrayBuffer): UintDataView {
  *
  * @param buffer The header's buffer
  */
-export function majorVersionView(buffer: ArrayBuffer): UintDataView {
+export function majorVersionView(buffer: DataView): UintDataView {
   return createUintDataView(buffer, 0x1A, 16) // 2 * 1 = 2 bytes
 }
 
@@ -43,7 +43,7 @@ export function majorVersionView(buffer: ArrayBuffer): UintDataView {
  *
  * @param buffer The header's buffer
  */
-export function bytesOrderView(buffer: ArrayBuffer): UintDataView {
+export function bytesOrderView(buffer: DataView): UintDataView {
   return createUintDataView(buffer, 0x1C, 16) // 1 * 2 = 2 bytes
 }
 
@@ -52,7 +52,7 @@ export function bytesOrderView(buffer: ArrayBuffer): UintDataView {
  *
  * @param buffer The header's buffer
  */
-export function sectorShiftView(buffer: ArrayBuffer): UintDataView {
+export function sectorShiftView(buffer: DataView): UintDataView {
   return createUintDataView(buffer, 0x1E, 16) // 2 * 1 = 2 bytes
 }
 
@@ -61,7 +61,7 @@ export function sectorShiftView(buffer: ArrayBuffer): UintDataView {
  *
  * @param buffer The header's buffer
  */
-export function miniSectorShiftView(buffer: ArrayBuffer): UintDataView {
+export function miniSectorShiftView(buffer: DataView): UintDataView {
   return createUintDataView(buffer, 0x20, 16) // 2 * 1 = 2 bytes
 }
 
@@ -70,35 +70,35 @@ export function miniSectorShiftView(buffer: ArrayBuffer): UintDataView {
  *
  * @param buffer The header's buffer
  */
-export function reservedView(buffer: ArrayBuffer): UintArrayDataView {
+export function reservedView(buffer: DataView): UintArrayDataView {
   return createUintArrayDataView(buffer, 0x22, 3, 16) // 2 * 3 = 6 bytes
 }
 
 /**
  *
  */
-export function directoryChainLengthView(buffer: ArrayBuffer): UintDataView {
+export function directoryChainLengthView(buffer: DataView): UintDataView {
   return createUintDataView(buffer, 0x28, 32) // 4 * 1 = 4 bytes
 }
 
 /**
  *
  */
-export function fatChainLengthView(buffer: ArrayBuffer): UintDataView {
+export function fatChainLengthView(buffer: DataView): UintDataView {
   return createUintDataView(buffer, 0x2C, 32) // 4 * 1 = 4 bytes
 }
 
 /**
  *
  */
-export function directoryChainStartView(buffer: ArrayBuffer): UintDataView {
+export function directoryChainStartView(buffer: DataView): UintDataView {
   return createUintDataView(buffer, 0x30, 32) // 4 * 1 = 4 bytes
 }
 
 /**
  *
  */
-export function transactionSignatureView(buffer: ArrayBuffer): UintDataView {
+export function transactionSignatureView(buffer: DataView): UintDataView {
   return createUintDataView(buffer, 0x34, 32) // 4 * 1 = 4 bytes
 }
 
@@ -106,14 +106,14 @@ export function transactionSignatureView(buffer: ArrayBuffer): UintDataView {
  *
  * @param buffer
  */
-export function miniSectorCutoffView(buffer: ArrayBuffer): UintDataView {
+export function miniSectorCutoffView(buffer: DataView): UintDataView {
   return createUintDataView(buffer, 0x38, 32) // 4 * 1 = 4 bytes
 }
 
 /**
  *
  */
-export function miniFatStartView(buffer: ArrayBuffer): UintDataView {
+export function miniFatStartView(buffer: DataView): UintDataView {
   return createUintDataView(buffer, 0x3C, 32) // 4 * 1 = 4 bytes
 }
 
@@ -121,7 +121,7 @@ export function miniFatStartView(buffer: ArrayBuffer): UintDataView {
  *
  * @param buffer
  */
-export function miniFatChainLengthView(buffer: ArrayBuffer): UintDataView {
+export function miniFatChainLengthView(buffer: DataView): UintDataView {
   return createUintDataView(buffer, 0x40, 32) // 4 * 1 = 4 bytes
 }
 
@@ -129,38 +129,38 @@ export function miniFatChainLengthView(buffer: ArrayBuffer): UintDataView {
  *
  * @param buffer
  */
-export function difatChainStartView(buffer: ArrayBuffer): UintDataView {
+export function difatChainStartView(buffer: DataView): UintDataView {
   return createUintDataView(buffer, 0x44, 32) // 4 * 1 = 4 bytes
 }
 
-export function difatChainLengthView(buffer: ArrayBuffer): UintDataView {
+export function difatChainLengthView(buffer: DataView): UintDataView {
   return createUintDataView(buffer, 0x48, 32) // 4 * 1 = 4 bytes
 }
 
-export function initialDifatChainView(buffer: ArrayBuffer): UintArrayDataView {
+export function initialDifatChainView(buffer: DataView): UintArrayDataView {
   return createUintArrayDataView(buffer, 0x4C, 109, 32) // 4 * 109 = 436 bytes
 }
 
-export function remainingSpaceView(buffer: ArrayBuffer): UintArrayDataView {
+export function remainingSpaceView(buffer: DataView): UintArrayDataView {
     return createUintArrayDataView(buffer, 512, 3584, 32) // 512 === 1 << 0x9 and (1 << 0xc) - (1 << 0x9) === 3584
 }
 
-function resetHeader(buffer: ArrayBuffer): void {
-    headerSignatureView(buffer).setValue([0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1])
+function resetHeader(buffer: DataView): void {
+    headerSignatureView(buffer).set([0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1])
     headerClsidView(buffer).fill(0)
-    minorVersionView(buffer).setValue(0x003E)
-    bytesOrderView(buffer).setValue(0xFFFE)
-    miniSectorShiftView(buffer).setValue(0x0006)
+    minorVersionView(buffer).set(0x003E)
+    bytesOrderView(buffer).set(0xFFFE)
+    miniSectorShiftView(buffer).set(0x0006)
     reservedView(buffer).fill(0)
-    directoryChainLengthView(buffer).setValue(0)
-    fatChainLengthView(buffer).setValue(0)
-    directoryChainStartView(buffer).setValue(SectorType.ENDOFCHAIN)
-    transactionSignatureView(buffer).setValue(0)
-    miniSectorCutoffView(buffer).setValue(0x00001000)
-    miniFatStartView(buffer).setValue(SectorType.ENDOFCHAIN)
-    miniFatChainLengthView(buffer).setValue(0)
-    difatChainStartView(buffer).setValue(SectorType.ENDOFCHAIN)
-    difatChainLengthView(buffer).setValue(0)
+    directoryChainLengthView(buffer).set(0)
+    fatChainLengthView(buffer).set(0)
+    directoryChainStartView(buffer).set(SectorType.ENDOFCHAIN)
+    transactionSignatureView(buffer).set(0)
+    miniSectorCutoffView(buffer).set(0x00001000)
+    miniFatStartView(buffer).set(SectorType.ENDOFCHAIN)
+    miniFatChainLengthView(buffer).set(0)
+    difatChainStartView(buffer).set(SectorType.ENDOFCHAIN)
+    difatChainLengthView(buffer).set(0)
     initialDifatChainView(buffer).fill(SectorType.FREESECT)
 }
 
@@ -168,19 +168,19 @@ function resetHeader(buffer: ArrayBuffer): void {
  *
  * @param buffer
  */
-export function resetHeaderV3(buffer: ArrayBuffer): void {
+export function resetHeaderV3(buffer: DataView): void {
     resetHeader(buffer)
-    majorVersionView(buffer).setValue(0x0003)
-    sectorShiftView(buffer).setValue(0x0009)
+    majorVersionView(buffer).set(0x0003)
+    sectorShiftView(buffer).set(0x0009)
 }
 
 /**
  *
  * @param buffer
  */
-export function resetHeaderV4(buffer: ArrayBuffer): void {
+export function resetHeaderV4(buffer: DataView): void {
     resetHeader(buffer)
-    majorVersionView(buffer).setValue(0x0004)
-    sectorShiftView(buffer).setValue(0x000c)
+    majorVersionView(buffer).set(0x0004)
+    sectorShiftView(buffer).set(0x000c)
     remainingSpaceView(buffer).fill(0)
 }

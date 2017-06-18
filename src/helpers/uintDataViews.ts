@@ -1,4 +1,4 @@
-import { range } from './arrays'
+import { range, sliceView } from '.'
 
 export type UintSize = 8 | 16 | 32 | 64
 
@@ -12,7 +12,8 @@ export class UintDataView {
     }
   }
 
-  public getValue(littleEndianness: boolean = true): number {
+  // tslint:disable-next-line:no-reserved-keywords
+  public get(littleEndianness: boolean = true): number {
     const { dataview, byteOffset } = this
     switch (this.size) {
       case 8:
@@ -32,7 +33,8 @@ export class UintDataView {
     }
   }
 
-  public setValue(value: number, littleEndianness: boolean = true): void {
+  // tslint:disable-next-line:no-reserved-keywords
+  public set(value: number, littleEndianness: boolean = true): void {
     const { dataview, byteOffset } = this
     switch (this.size) {
       case 8:
@@ -66,29 +68,31 @@ export class UintArrayDataView {
       .map((index: number) => new UintDataView(dataview, size, index * byteSize))
   }
 
-  public getValue(littleEndianness: boolean = true): number[] {
-    return this.dataviews.map((dataview: UintDataView) => dataview.getValue(littleEndianness))
+  // tslint:disable-next-line:no-reserved-keywords
+  public get(littleEndianness: boolean = true): number[] {
+    return this.dataviews.map((dataview: UintDataView) => dataview.get(littleEndianness))
   }
 
-  public setValue(values: number[], littleEndianness: boolean = true): void {
+  // tslint:disable-next-line:no-reserved-keywords
+  public set(values: number[], littleEndianness: boolean = true): void {
     this.dataviews.forEach((dataview: UintDataView, index: number) => {
-      dataview.setValue(values[index], littleEndianness)
+      dataview.set(values[index], littleEndianness)
     })
   }
 
   public fill(value: number, littleEndianness: boolean = true): void {
     this.dataviews.forEach((dataview: UintDataView) => {
-      dataview.setValue(value, littleEndianness)
+      dataview.set(value, littleEndianness)
     })
   }
 
   private dataviews: UintDataView[]
 }
 
-export function createUintDataView(buffer: ArrayBuffer, byteOffset: number, size: UintSize): UintDataView {
-  return new UintDataView(new DataView(buffer, byteOffset, size / 8), size, 0)
+export function createUintDataView(view: DataView, byteOffset: number, size: UintSize): UintDataView {
+  return new UintDataView(sliceView(view, byteOffset, size / 8), size, 0)
 }
 
-export function createUintArrayDataView(buffer: ArrayBuffer, byteOffset: number, length: number, size: UintSize): UintArrayDataView {
-  return new UintArrayDataView(new DataView(buffer, byteOffset, length * size / 8), size)
+export function createUintArrayDataView(view: DataView, byteOffset: number, length: number, size: UintSize): UintArrayDataView {
+  return new UintArrayDataView(sliceView(view, byteOffset, length * size / 8), size)
 }

@@ -1,6 +1,6 @@
 import { createUintArrayDataView, UintArrayDataView } from '../../helpers/uintDataViews'
 
-function partialFatArrayView(buffer: ArrayBuffer): UintArrayDataView {
+function partialFatArrayView(buffer: DataView): UintArrayDataView {
   return createUintArrayDataView(buffer, 0, buffer.byteLength / 4, 32)
 }
 
@@ -8,6 +8,6 @@ function partialFatArrayView(buffer: ArrayBuffer): UintArrayDataView {
  *
  * @param buffer
  */
-export function getPartialFatArray(buffer: ArrayBuffer): number[] {
-  return partialFatArrayView(buffer).getValue()
+export function getPartialFatArray(buffer: DataView): number[] {
+  return partialFatArrayView(buffer).get()
 }

@@ -24,7 +24,8 @@ export function getDirectoryEntries(buffer: DataView): DirectoryEntry[] {
 /**
  * Traverse a red-black tree in the natural order LEFT-ROOT-RIGHT.
  *
- * This function is purposefully not implemented in a recursive manner to avoid stack-overflows caused by deep recursions.
+ * This function is intentionally  not implemented in a recursive manner to avoid stack-overflows caused by deep recursions.
+ * @todo implement a proper stack datastructure and use it in `toExplore`
  *
  * @param rootId index to the root of the subtree to be visited
  * @param entries list of all directory entries to be considered
@@ -63,7 +64,7 @@ function redBlackTreeTraversal(rootId: number, entries: DirectoryEntry[],
  * Traverse a CFB tree in breath first style:
  * visit all nodes in the root directory then recursively visit the child directories.
  *
- * This function is purposefully not implemented in a recursive manner to avoid stack-overflows caused by deep recursions.
+ * This function is intentionally not implemented in a recursive manner to avoid stack-overflows caused by deep recursions.
  *
  * @param rootId index to the root of the CFB tree
  * @param entries list of all directory entries to be considered

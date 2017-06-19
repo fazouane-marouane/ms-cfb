@@ -30,6 +30,9 @@ class LinkedChainNode {
 
 /**
  *
+ * @todo Implement a simplistic version of this function that builds a chain when given a entry sector
+ * and a max number of sectors
+ *
  * @param partialFatArrays
  */
 function buildChains(partialFatArrays: DataView[]): number[][] {
@@ -65,7 +68,7 @@ function buildChains(partialFatArrays: DataView[]): number[][] {
 }
 
 /**
- *
+ * @todo remove the useless joinViews
  */
 export function getFatChains(partialFatArrays: DataView[], sectors: DataView[]): Map<number, DataView> {
   const chains = new Map<number, DataView>()

@@ -68,7 +68,6 @@ function strictBuildChains(partialFatArrays: DataView[]): number[][] {
 }
 
 export function simpleBuildChain(startIndex: number, length: number, partialFatArrays: DataView[], sectors: DataView[]): DataView[] {
-  const array = partialFatArrays.map(getPartialFatArray)
   const fatSize = partialFatArrays[0].byteLength / 4
   const result = []
   let nextIndex = startIndex
@@ -77,7 +76,7 @@ export function simpleBuildChain(startIndex: number, length: number, partialFatA
       throw new Error('chain too short')
     }
     result.push(sectors[nextIndex])
-    nextIndex = array[Math.floor(nextIndex / fatSize)][nextIndex % fatSize]
+    nextIndex = partialFatArrays[Math.floor(nextIndex / fatSize)].getUint32((nextIndex % fatSize) * 4, true)
   }
 
   return result

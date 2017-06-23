@@ -20,7 +20,7 @@ export class CFB {
     this.buildMiniFatSectors(header)
     // build the directory's hierarchy
     this.root = buildHierarchy(this.directoryEntries, header.miniSectorCutoff(),
-      this.fatSectors, this.sectors, this.miniFatSectors, this.miniStreamSectors)
+      this.sectors, this.fatSectors, this.miniStreamSectors, this.miniFatSectors)
   }
 
   /**
@@ -97,7 +97,7 @@ export class CFB {
         throw new Error('MiniStream sector not found')
       }
       const miniStreamStart =  directoryEntries[0].getStartingSectorLocation()
-      const miniStreamLength = directoryEntries[0].getStreamSize()
+      const miniStreamLength = Math.ceil(directoryEntries[0].getStreamSize() / header.sectorSize())
       // tslint:disable-next-line:no-non-null-assertion
       const miniStreamView = simpleBuildChain(miniStreamStart, miniStreamLength, this.fatSectors, this.sectors)
       const sectorSize = header.miniSectorSize()

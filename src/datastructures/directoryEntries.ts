@@ -123,7 +123,9 @@ export function buildHierarchy(entries: DirectoryEntry[], miniSectorCutoff: numb
   })
   completeDirectoryTreeTraversal(0, entries,
     (entry: DirectoryEntry, parentId: number) => {
+      // tslint:disable-next-line:variable-name
       let fat_ = fatSectors
+      // tslint:disable-next-line:variable-name
       let sectors_ = sectors
       const streamSize = entry.getStreamSize()
       if (streamSize < miniSectorCutoff) {
@@ -131,7 +133,7 @@ export function buildHierarchy(entries: DirectoryEntry[], miniSectorCutoff: numb
         sectors_ = miniSectors
       }
       const sectorId = entry.getStartingSectorLocation()
-      const chain = simpleBuildChain(sectorId, streamSize, fat_, sectors_)
+      const chain = simpleBuildChain(sectorId, Math.ceil(streamSize / fat_[0].byteLength), fat_, sectors_)
       // tslint:disable-next-line:no-non-null-assertion
       directories.get(parentId)!.files.set(entry.getName(), new FileDescription(
         sectorId <= SectorType.MAXREGSECT ? createStream(assertIsDefined(chain), streamSize) :

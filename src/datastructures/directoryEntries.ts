@@ -1,24 +1,35 @@
-import { assertIsDefined, chunkBuffer, sliceInnerBuffer } from '../helpers'
+import { assertIsDefined, chunkBuffer, createStream, sliceInnerBuffer } from '../helpers'
 import { DirectoryDescription, FileDescription } from './directory'
 import { DirectoryEntry } from './directoryEntry'
 import { ObjectType, SectorType, StreamType } from './enums'
+import { simpleBuildChain } from './fatChain'
 
 /**
  * Interpret a `buffer` into a sequence of `DirectoryEntry`s. Unallocated CFB objects are simply ignored.
  *
  * @param buffer The buffer to be turned into a sequence of cfb entries
  */
-export function getDirectoryEntries(buffer: DataView): DirectoryEntry[] {
-  return chunkBuffer(buffer, 128)
-    .map((chunk: DataView, index: number) => {
+export function getDirectoryEntries(buffers: DataView[]): DirectoryEntry[] {
+  if (buffers.length === 0) {
+    return []
+  }
+  const result: DirectoryEntry[] = []
+  const dirBySector = Math.floor(buffers[0].byteLength / 128)
+  buffers.forEach((buffer: DataView, bufferIndex: number) => {
+    chunkBuffer(buffer, 128).forEach((chunk: DataView, chunkIndex: number) => {
       const entry = new DirectoryEntry(chunk)
       if (!entry.check()) {
-        throw new Error(`Directory entry ${index} not properly formatted.`)
+        throw new Error(`Directory entry ${bufferIndex * dirBySector + chunkIndex} not properly formatted.`)
+      }
+      if (entry.getObjectType() !== ObjectType.UNALLOCATED) {
+        result.push(entry)
       }
 
       return entry
     })
-    .filter((entry: DirectoryEntry) => entry.getObjectType() !== ObjectType.UNALLOCATED)
+  })
+
+  return result
 }
 
 /**
@@ -102,7 +113,8 @@ function completeDirectoryTreeTraversal(rootId: number, entries: DirectoryEntry[
  * @param miniFatChain Collection of file streams which can be retrieved by the position of their first sector in the MiniFAT.
  */
 export function buildHierarchy(entries: DirectoryEntry[], miniSectorCutoff: number,
-  fatChain: Map<number, DataView>, miniFatChain: Map<number, DataView>): DirectoryDescription {
+  sectors: DataView[], fatSectors: DataView[],
+  miniSectors: DataView[], miniFatSectors: DataView[]): DirectoryDescription {
   const directories = new Map<number, DirectoryDescription>()
   entries.forEach((entry: DirectoryEntry, index: number) => {
     if (entry.getObjectType() !== ObjectType.STREAM) {
@@ -111,15 +123,18 @@ export function buildHierarchy(entries: DirectoryEntry[], miniSectorCutoff: numb
   })
   completeDirectoryTreeTraversal(0, entries,
     (entry: DirectoryEntry, parentId: number) => {
-      let chains = fatChain
+      let fat_ = fatSectors
+      let sectors_ = sectors
       const streamSize = entry.getStreamSize()
       if (streamSize < miniSectorCutoff) {
-        chains = miniFatChain
+        fat_ = miniFatSectors
+        sectors_ = miniSectors
       }
       const sectorId = entry.getStartingSectorLocation()
+      const chain = simpleBuildChain(sectorId, streamSize, fat_, sectors_)
       // tslint:disable-next-line:no-non-null-assertion
       directories.get(parentId)!.files.set(entry.getName(), new FileDescription(
-        sectorId <= SectorType.MAXREGSECT ? sliceInnerBuffer(assertIsDefined(chains.get(sectorId)), 0, streamSize) :
+        sectorId <= SectorType.MAXREGSECT ? createStream(assertIsDefined(chain), streamSize) :
           new ArrayBuffer(0)))
     },
     (entry: DirectoryEntry, entryId: number, parentId: number) => {

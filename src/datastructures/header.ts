@@ -5,7 +5,8 @@ import { arraysAreEqual } from '../helpers'
 import { bytesOrderView, difatChainStartView, directoryChainLengthView,
   directoryChainStartView, fatChainLengthView, headerClsidView,
   headerSignatureView, initialDifatChainView, majorVersionView,
-  miniFatStartView, miniSectorCutoffView, miniSectorShiftView, minorVersionView, remainingSpaceView,
+  miniFatChainLengthView, miniFatStartView, miniSectorCutoffView, miniSectorShiftView,
+  minorVersionView, remainingSpaceView,
   reservedView, resetHeaderV3, resetHeaderV4, sectorShiftView } from './dataViews'
 import { SectorType } from './enums'
 
@@ -130,8 +131,16 @@ export class Header {
     return 1 << sectorShiftView(this.buffer).get()
   }
 
-  private getNumberOfFatSectors(): number {
+  public getNumberOfFatSectors(): number {
     return fatChainLengthView(this.buffer).get()
+  }
+
+  public getDirectoryChainLength(): number {
+    return directoryChainLengthView(this.buffer).get()
+  }
+
+  public getMiniFatChainLength(): number {
+    return miniFatChainLengthView(this.buffer).get()
   }
 
   public miniSectorSize(): number {

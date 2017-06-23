@@ -4,6 +4,20 @@ export function sliceView(view: DataView, byteOffset: number, length?: number): 
   return new DataView(view.buffer, view.byteOffset + byteOffset, length)
 }
 
+export function createStream(views: DataView[], byteLength: number): ArrayBuffer {
+  const tmp = new Uint8Array(byteLength)
+  let accumulatedByteLength = 0
+  // tslint:disable-next-line:no-increment-decrement
+  for (let index = 0; index < views.length && accumulatedByteLength < byteLength; index++) {
+    const view = views[index]
+    const toRead = Math.min(byteLength - accumulatedByteLength, view.byteLength)
+    tmp.set(new Uint8Array(view.buffer, view.byteOffset, toRead), accumulatedByteLength)
+    accumulatedByteLength += toRead
+  }
+
+  return tmp.buffer
+}
+
 export function sliceInnerBuffer(view: DataView, byteOffset: number, length?: number): ArrayBuffer {
   return view.buffer.slice(view.byteOffset + byteOffset, length)
 }

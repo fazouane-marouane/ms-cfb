@@ -69,14 +69,17 @@ function strictBuildChains(partialFatArrays: DataView[]): number[][] {
 
 export function simpleBuildChain(startIndex: number, length: number, partialFatArrays: DataView[], sectors: DataView[]): DataView[] {
   const fatSize = partialFatArrays[0].byteLength / 4
-  const result = []
+  const result = length > 0 ? Array(length) : []
+  let index = 0
   let nextIndex = startIndex
-  while (result.length < length || (length === 0 && nextIndex !== SectorType.ENDOFCHAIN)) {
+  while (index < length || (length === 0 && nextIndex !== SectorType.ENDOFCHAIN)) {
     if (nextIndex > fatSize * partialFatArrays.length || nextIndex > SectorType.MAXREGSECT || nextIndex === SectorType.ENDOFCHAIN) {
       throw new Error('chain too short')
     }
-    result.push(sectors[nextIndex])
+    result[index] = sectors[nextIndex]
     nextIndex = partialFatArrays[Math.floor(nextIndex / fatSize)].getUint32((nextIndex % fatSize) * 4, true)
+    // tslint:disable-next-line:no-increment-decrement
+    index++
   }
 
   return result

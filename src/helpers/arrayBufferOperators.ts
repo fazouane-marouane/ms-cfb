@@ -32,13 +32,35 @@ export function sliceInnerBuffer(view: DataView, byteOffset: number, length?: nu
 export function chunkBuffer(view: DataView, chunkSize: number): DataView[] {
   const numberOfFixedSizeChunks = Math.floor(view.byteLength / chunkSize)
   const remainingBytes = view.byteLength % chunkSize
-  const result = range(0, numberOfFixedSizeChunks)
-    .map((index: number): DataView => sliceView(view, chunkSize * index, chunkSize))
+  const result = Array<DataView>(numberOfFixedSizeChunks)
+  // tslint:disable-next-line:no-increment-decrement
+  for (let index = 0; index < numberOfFixedSizeChunks; index++) {
+    result[index] = sliceView(view, chunkSize * index, chunkSize)
+  }
   if (remainingBytes > 0) {
     result.push(sliceView(view, chunkSize * numberOfFixedSizeChunks, remainingBytes))
   }
 
   return result
+}
+
+/**
+ *
+ * @param view
+ * @param chunkSize
+ * @param action
+ */
+export function chunkBufferForEach(view: DataView, chunkSize: number, action: ((chunk: DataView, chunkId: number) => void)): void {
+  const numberOfFixedSizeChunks = Math.floor(view.byteLength / chunkSize)
+  const remainingBytes = view.byteLength % chunkSize
+  let index = 0
+  // tslint:disable-next-line:no-increment-decrement
+  for (; index < numberOfFixedSizeChunks; index++) {
+    action(sliceView(view, chunkSize * index, chunkSize), index)
+  }
+  if (remainingBytes > 0) {
+    action(sliceView(view, chunkSize * numberOfFixedSizeChunks, remainingBytes), index)
+  }
 }
 
 /**

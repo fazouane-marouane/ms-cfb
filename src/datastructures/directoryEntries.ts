@@ -1,4 +1,4 @@
-import { assertIsDefined, chunkBuffer, createStream, sliceInnerBuffer } from '../helpers'
+import { assertIsDefined, chunkBufferForEach, createStream, sliceInnerBuffer } from '../helpers'
 import { DirectoryDescription, FileDescription } from './directory'
 import { DirectoryEntry } from './directoryEntry'
 import { ObjectType, SectorType, StreamType } from './enums'
@@ -16,16 +16,14 @@ export function getDirectoryEntries(buffers: DataView[]): DirectoryEntry[] {
   const result: DirectoryEntry[] = []
   const dirBySector = Math.floor(buffers[0].byteLength / 128)
   buffers.forEach((buffer: DataView, bufferIndex: number) => {
-    chunkBuffer(buffer, 128).forEach((chunk: DataView, chunkIndex: number) => {
+    chunkBufferForEach(buffer, 128, (chunk: DataView, chunkIndex: number) => {
       const entry = new DirectoryEntry(chunk)
-      if (!entry.check()) {
+      /*if (!entry.check()) {
         throw new Error(`Directory entry ${bufferIndex * dirBySector + chunkIndex} not properly formatted.`)
-      }
+      }*/
       if (entry.getObjectType() !== ObjectType.UNALLOCATED) {
         result.push(entry)
       }
-
-      return entry
     })
   })
 

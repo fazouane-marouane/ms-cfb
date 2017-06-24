@@ -1,9 +1,9 @@
 version: 1.0.{build}
 platform: x64
 cache:
-- '.git\lfs\objects'
+- ".git\\lfs\\objects"
 - "%LOCALAPPDATA%\\Yarn"
-- node_modules"
+- "node_modules"
 clone_script: echo skip
 install:
   - git init %APPVEYOR_BUILD_FOLDER%

@@ -63,9 +63,13 @@ export class UintDataView {
 export class UintArrayDataView {
   constructor(dataview: DataView, size: UintSize) {
     const byteSize = size / 8
-    this.dataviews = range(0, dataview.byteLength / byteSize)
-      // tslint:disable-next-line:no-non-null-assertion
-      .map((index: number) => new UintDataView(dataview, size, index * byteSize))
+    const length = dataview.byteLength / byteSize
+    const dataviews = Array<UintDataView>(length)
+    // tslint:disable-next-line:no-increment-decrement
+    for (let index = 0; index < length; index++) {
+      dataviews[index] = new UintDataView(dataview, size, index * byteSize)
+    }
+    this.dataviews = dataviews
   }
 
   // tslint:disable-next-line:no-reserved-keywords

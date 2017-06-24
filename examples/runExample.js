@@ -25,22 +25,6 @@ function processFile(filename) {
     async: false,
   })
   const cfb = readFromNodeBuffer(buffer)
-  const header = cfb.header
-  const sectors = cfb.sectors
-  console.log('signature', header.signature())
-  console.log('version', header.version())
-  console.log('bytesOrder', header.bytesOrder())
-  console.log('start of directoryChain', header.getStartOfDirectoryChain())
-  console.log('start of minifat', header.getStartOfMiniFat())
-  console.log('start of difat', header.getStartOfDifat())
-  console.log('sector size', header.sectorSize())
-  console.log('number of fat sectors', header.getNumberOfFatSectors())
-  console.log('number of sectors', sectors.length)
-  console.log('number of chains', cfb.fatChain.size)
-  cfb.fatChain.forEach((sector, startIndex) => {
-    console.log(`startIndex ${startIndex}, byteLength ${sector.byteLength}`)
-  })
-
   function ignoreSpecialValues(value) {
     return value <= 0xFFFFFFFA ? value.toString() : '-'
   }

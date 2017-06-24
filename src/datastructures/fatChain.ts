@@ -35,7 +35,7 @@ class LinkedChainNode {
  *
  * @param partialFatArrays
  */
-function buildChains(partialFatArrays: DataView[]): number[][] {
+function strictBuildChains(partialFatArrays: DataView[]): number[][] {
   const chainsNodes = new Map<number, LinkedChainNode>()
   const chainsHeadNodes = new Map<number, LinkedChainNode>()
   const completeFatArray: number[] = concat(partialFatArrays.map(getPartialFatArray))
@@ -67,12 +67,30 @@ function buildChains(partialFatArrays: DataView[]): number[][] {
   return Array.from(chainsHeadNodes.values()).map((linkedList: LinkedChainNode) => linkedList.toArray())
 }
 
+export function simpleBuildChain(startIndex: number, length: number, partialFatArrays: DataView[], sectors: DataView[]): DataView[] {
+  const fatSize = partialFatArrays[0].byteLength / 4
+  const result = length > 0 ? Array(length) : []
+  let index = 0
+  let nextIndex = startIndex
+  while (index < length || (length === 0 && nextIndex !== SectorType.ENDOFCHAIN)) {
+    if (nextIndex > fatSize * partialFatArrays.length || nextIndex > SectorType.MAXREGSECT || nextIndex === SectorType.ENDOFCHAIN) {
+      throw new Error('chain too short')
+    }
+    result[index] = sectors[nextIndex]
+    nextIndex = partialFatArrays[Math.floor(nextIndex / fatSize)].getUint32((nextIndex % fatSize) * 4, true)
+    // tslint:disable-next-line:no-increment-decrement
+    index++
+  }
+
+  return result
+}
+
 /**
  * @todo remove the useless joinViews
  */
 export function getFatChains(partialFatArrays: DataView[], sectors: DataView[]): Map<number, DataView> {
   const chains = new Map<number, DataView>()
-  buildChains(partialFatArrays)
+  strictBuildChains(partialFatArrays)
     .forEach((chainIndices: number[]) => {
       const sectorsChain = chainIndices.map((index: number) => sectors[index])
       chains.set(chainIndices[0], joinViews(sectorsChain))

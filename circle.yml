@@ -7,20 +7,16 @@ jobs:
     steps:
       - checkout
       - run:
-          name: git-lfs
-          command: |
-            mkdir -p ~/.ssh
-            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-            ssh git@github.com git-lfs-authenticate "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}" download
-            git lfs pull
-      - run:
           name: version
           command: node --version && npm --version && yarn --version
       - run:
           name: generating a whitespaces-free lockfile
           command: tr -d ' \t\n\r\f' < yarn.lock > ci-cache-key
       - restore_cache:
-          key: dependency-cache-{{ checksum "ci-cache-key" }}
+          key: dependency-cache-lfs-{{ checksum "ci-cache-key" }}
+      - run:
+          name: git-lfs
+          command: git lfs pull
       - run:
           name: yarn-install
           command: |
@@ -28,8 +24,9 @@ jobs:
             yarn install --frozen-lockfile
             export NODE_ENV="production"
       - save_cache:
-          key: dependency-cache-{{ checksum "ci-cache-key" }}
+          key: dependency-cache-lfs-{{ checksum "ci-cache-key" }}
           paths:
+            - '.git/lfs/objects'
             - ./node_modules
       - run:
           name: build

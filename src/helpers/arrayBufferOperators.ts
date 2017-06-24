@@ -4,6 +4,20 @@ export function sliceView(view: DataView, byteOffset: number, length?: number): 
   return new DataView(view.buffer, view.byteOffset + byteOffset, length)
 }
 
+export function createStream(views: DataView[], byteLength: number): ArrayBuffer {
+  const tmp = new Uint8Array(byteLength)
+  let accumulatedByteLength = 0
+  // tslint:disable-next-line:no-increment-decrement
+  for (let index = 0; index < views.length && accumulatedByteLength < byteLength; index++) {
+    const view = views[index]
+    const toRead = Math.min(byteLength - accumulatedByteLength, view.byteLength)
+    tmp.set(new Uint8Array(view.buffer, view.byteOffset, toRead), accumulatedByteLength)
+    accumulatedByteLength += toRead
+  }
+
+  return tmp.buffer
+}
+
 export function sliceInnerBuffer(view: DataView, byteOffset: number, length?: number): ArrayBuffer {
   return view.buffer.slice(view.byteOffset + byteOffset, length)
 }
@@ -18,13 +32,35 @@ export function sliceInnerBuffer(view: DataView, byteOffset: number, length?: nu
 export function chunkBuffer(view: DataView, chunkSize: number): DataView[] {
   const numberOfFixedSizeChunks = Math.floor(view.byteLength / chunkSize)
   const remainingBytes = view.byteLength % chunkSize
-  const result = range(0, numberOfFixedSizeChunks)
-    .map((index: number): DataView => sliceView(view, chunkSize * index, chunkSize))
+  const result = Array<DataView>(numberOfFixedSizeChunks)
+  // tslint:disable-next-line:no-increment-decrement
+  for (let index = 0; index < numberOfFixedSizeChunks; index++) {
+    result[index] = sliceView(view, chunkSize * index, chunkSize)
+  }
   if (remainingBytes > 0) {
     result.push(sliceView(view, chunkSize * numberOfFixedSizeChunks, remainingBytes))
   }
 
   return result
+}
+
+/**
+ *
+ * @param view
+ * @param chunkSize
+ * @param action
+ */
+export function chunkBufferForEach(view: DataView, chunkSize: number, action: ((chunk: DataView, chunkId: number) => void)): void {
+  const numberOfFixedSizeChunks = Math.floor(view.byteLength / chunkSize)
+  const remainingBytes = view.byteLength % chunkSize
+  let index = 0
+  // tslint:disable-next-line:no-increment-decrement
+  for (; index < numberOfFixedSizeChunks; index++) {
+    action(sliceView(view, chunkSize * index, chunkSize), index)
+  }
+  if (remainingBytes > 0) {
+    action(sliceView(view, chunkSize * numberOfFixedSizeChunks, remainingBytes), index)
+  }
 }
 
 /**

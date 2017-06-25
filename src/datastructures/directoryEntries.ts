@@ -8,8 +8,9 @@ import { simpleBuildChain } from './fatChain'
  * Interpret a `buffer` into a sequence of `DirectoryEntry`s. Unallocated CFB objects are simply ignored.
  *
  * @param buffer The buffer to be turned into a sequence of cfb entries
+ * @param check Check integrity of the directory entry
  */
-export function getDirectoryEntries(buffers: DataView[]): DirectoryEntry[] {
+export function getDirectoryEntries(buffers: DataView[], check: boolean = false): DirectoryEntry[] {
   if (buffers.length === 0) {
     return []
   }
@@ -18,9 +19,9 @@ export function getDirectoryEntries(buffers: DataView[]): DirectoryEntry[] {
   buffers.forEach((buffer: DataView, bufferIndex: number) => {
     chunkBufferForEach(buffer, 128, (chunk: DataView, chunkIndex: number) => {
       const entry = new DirectoryEntry(chunk)
-      /*if (!entry.check()) {
+      if (check && !entry.check()) {
         throw new Error(`Directory entry ${bufferIndex * dirBySector + chunkIndex} not properly formatted.`)
-      }*/
+      }
       if (entry.getObjectType() !== ObjectType.UNALLOCATED) {
         result.push(entry)
       }

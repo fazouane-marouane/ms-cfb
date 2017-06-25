@@ -1,5 +1,3 @@
-import { range } from './arrays'
-
 export function sliceView(view: DataView, byteOffset: number, length?: number): DataView {
   return new DataView(view.buffer, view.byteOffset + byteOffset, length)
 }

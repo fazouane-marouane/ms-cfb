@@ -1,5 +1,3 @@
-import { range, sliceView } from '.'
-
 export type UintSize = 8 | 16 | 32 | 64
 
 /**

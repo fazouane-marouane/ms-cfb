@@ -7,6 +7,6 @@
 *.ts text eol=crlf
 *.ejs text eol=crlf
 # Binary files
-*.doc filter=lfs diff=lfs merge=lfs -text
-*.msg filter=lfs diff=lfs merge=lfs -text
-*.oft filter=lfs diff=lfs merge=lfs -text
+*.doc -text
+*.msg -text
+*.oft -text

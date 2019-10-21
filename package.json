@@ -40,9 +40,7 @@
   "dependencies": {},
   "peerDependencies": {},
   "husky": {
-    "hooks": {
-      "pre-commit": "tsdx lint"
-    }
+    "hooks": {}
   },
   "prettier": {
     "printWidth": 80,

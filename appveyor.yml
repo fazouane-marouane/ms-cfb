@@ -1,7 +1,6 @@
 version: 1.0.{build}
 platform: x64
 cache:
-  - ".git\\lfs\\objects"
   - "%LOCALAPPDATA%\\Yarn"
   - 'node_modules'
 clone_script: echo skip

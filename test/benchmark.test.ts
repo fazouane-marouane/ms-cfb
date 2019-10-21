@@ -63,7 +63,7 @@ describe('benchmark', () => {
   it.each([['dummy.doc'], ['message.msg'], ['template.oft']])(
     'works',
     filename => {
-      processFile(resolve(__dirname, `./fixtures/${filename}`));
+      processFile(resolve(__dirname, `./sample-files/${filename}`));
     }
   );
 });

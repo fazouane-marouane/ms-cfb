@@ -30,10 +30,7 @@ jobs:
             - ./node_modules
       - run:
           name: build
-          command: yarn run build
-      - run:
-          name: build-node
-          command: yarn run build:node
+          command: yarn build
       - run:
           name: test
-          command: yarn run start
+          command: yarn test

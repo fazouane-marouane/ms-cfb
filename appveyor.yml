@@ -1,9 +1,9 @@
 version: 1.0.{build}
 platform: x64
 cache:
-- ".git\\lfs\\objects"
-- "%LOCALAPPDATA%\\Yarn"
-- "node_modules"
+  - ".git\\lfs\\objects"
+  - "%LOCALAPPDATA%\\Yarn"
+  - 'node_modules'
 clone_script: echo skip
 install:
   - git init %APPVEYOR_BUILD_FOLDER%
@@ -11,13 +11,12 @@ install:
   - git remote add origin https://github.com/%APPVEYOR_REPO_NAME%.git
   - git fetch
   - git checkout %APPVEYOR_REPO_BRANCH%
-  - ps: Install-Product node 8.1 x64
+  - ps: Install-Product node 12 x64
   - node --version
   - npm --version
   - yarn --version
 build_script:
   - yarn install --frozen-lockfile
-  - yarn run build
-  - yarn run build:node
+  - yarn build
 test_script:
-- cmd: yarn run start
+  - cmd: yarn test

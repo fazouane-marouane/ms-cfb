@@ -1,4 +1,4 @@
-import { assertIsDefined, chunkBufferForEach, createStream, sliceInnerBuffer } from '../helpers'
+import { assertIsDefined, chunkBufferForEach, createStream } from '../helpers'
 import { DirectoryDescription, FileDescription } from './directory'
 import { DirectoryEntry } from './directoryEntry'
 import { ObjectType, SectorType, StreamType } from './enums'

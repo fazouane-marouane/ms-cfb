@@ -8,13 +8,6 @@ export function readFromArrayBuffer(buffer: ArrayBuffer): CFB {
   return new CFB(buffer)
 }
 
-// tslint:disable-next-line:interface-name
-interface FileReaderOnLoadEvent extends Event {
-  target:  EventTarget & {
-    readonly result: ArrayBuffer
-  }
-}
-
 /**
  *
  * @param file
@@ -25,11 +18,11 @@ export function readFromBlob(file: Blob): Promise<CFB> {
   const arrayBufferPromise = new Promise<ArrayBuffer>(
     (resolve: (value: ArrayBuffer) => void, reject: (reason: string) => void): void => {
       const reader = new FileReader()
-      reader.onload = (event: FileReaderOnLoadEvent): void => {
-        resolve(event.target.result)
+      reader.onloadend = (event: ProgressEvent<FileReader>): void => {
+        resolve(event.target!.result! as ArrayBuffer)
       }
-      reader.onerror = (event: ErrorEvent): void => {
-        reject(event.message)
+      reader.onerror = (event: ProgressEvent<FileReader>): void => {
+        reject(event.target!.error!.message)
       }
       reader.readAsArrayBuffer(file)
     })

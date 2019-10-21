@@ -1,0 +1,31 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node
+    steps:
+      - checkout
+      - run:
+          name: version
+          command: node --version && npm --version && yarn --version
+      - run:
+          name: generating a whitespaces-free lockfile
+          command: tr -d ' \t\n\r\f' < yarn.lock > ci-cache-key
+      - restore_cache:
+          key: mscfb-dependency-cache-{{ checksum "ci-cache-key" }}
+      - run:
+          name: install dependencies
+          command: |
+            export NODE_ENV="development"
+            yarn install --frozen-lockfile
+            export NODE_ENV="production"
+      - save_cache:
+          key: mscfb-dependency-cache-{{ checksum "ci-cache-key" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: build
+          command: yarn build
+      - run:
+          name: test
+          command: yarn test

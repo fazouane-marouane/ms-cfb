@@ -2,10 +2,20 @@
   "name": "@practical/ms-cfb",
   "version": "1.0.0",
   "description": "A complete implementation of MS-CFB",
-  "main": "dist/ms-cfb.js",
+  "license": "MIT",
+  "author": "Fazouane Marouane",
+  "main": "dist/index.js",
+  "module": "dist/mylib.esm.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/practicaljs/cfb.git"
+  },
+  "bugs": {
+    "url": "https://github.com/practicaljs/cfb/issues"
   },
   "keywords": [
     "cfb",
@@ -21,55 +31,30 @@
     "msg",
     "oft"
   ],
-  "author": "Fazouane Marouane",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/practicaljs/cfb/issues"
-  },
-  "homepage": "https://github.com/practicaljs/cfb#readme",
-  "neutrino": {
-    "use": [
-      "neutrino-preset-ts",
-      "neutrino.override.js"
-    ],
-    "options": {
-      "html": {
-        "inject": false,
-        "template": "./examples/index.ejs"
-      }
-    }
-  },
   "scripts": {
-    "start": "node examples/runExample.js examples/dummy.doc examples/message.msg examples/template.oft",
-    "livereload": "neutrino start",
-    "build": "npm-run-all --parallel build:bundle build:es2015",
-    "build:bundle": "neutrino build",
-    "build:es2015": "tsc --outDir ./build --module es2015 --declaration true",
-    "build:node": "tsc --outDir ./node-build --module commonjs",
-    "lint": "npm-run-all --sequential lint:js lint:ts",
-    "lint:js": "eslint \"neutrino.override.js\" \"examples/**/*.js\"",
-    "lint:ts": "tslint --config tslint.json --type-check --project tsconfig.json \"src/**/*.ts\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test",
+    "lint": "tsdx lint"
+  },
+  "dependencies": {},
+  "peerDependencies": {},
+  "husky": {
+    "hooks": {}
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
   },
   "devDependencies": {
-    "@types/node": "^7.0.29",
+    "@types/benchmark": "^1.0.31",
+    "@types/jest": "^24.0.19",
     "benchmark": "^2.1.4",
-    "eslint": "^4.18.2",
-    "eslint-config-airbnb-base": "^11.2.0",
-    "eslint-plugin-import": "^2.3.0",
-    "leftpad": "^0.0.1",
-    "neutrino": "^5.9.0",
-    "neutrino-preset-ts": "^1.5.5",
-    "npm-run-all": "^4.0.2",
-    "rightpad": "^1.0.1",
-    "source-map-support": "^0.4.15",
-    "tslint": "^5.4.3",
-    "tslint-microsoft-contrib": "^5.0.0",
-    "typescript": "^2.3.4"
-  },
-  "directories": [
-    "./build",
-    "./dist"
-  ],
-  "dependencies": {}
+    "husky": "^3.0.9",
+    "tsdx": "^0.10.5",
+    "tslib": "^1.10.0",
+    "typescript": "^3.6.4"
+  }
 }

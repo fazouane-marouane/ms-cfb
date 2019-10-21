@@ -3,8 +3,8 @@ import { getNextDifatSectorIndex, getPartialDifatArray } from './dataViews'
 import { DirectoryDescription } from './directory'
 import { buildHierarchy, getDirectoryEntries } from './directoryEntries'
 import { DirectoryEntry } from './directoryEntry'
-import { ObjectType, SectorType, StreamType } from './enums'
-import { getFatChains, simpleBuildChain } from './fatChain'
+import { SectorType } from './enums'
+import { simpleBuildChain } from './fatChain'
 import { Header } from './header'
 
 /**
@@ -19,8 +19,9 @@ export class CFB {
     this.buildDirectoryEntries(header)
     this.buildMiniFatSectors(header)
     // build the directory's hierarchy
-    this.root = buildHierarchy(this.directoryEntries, header.miniSectorCutoff(),
-      this.sectors, this.fatSectors, this.miniStreamSectors, this.miniFatSectors)
+
+    this.root = buildHierarchy(this.directoryEntries,
+      header.miniSectorCutoff(), this.sectors, this.fatSectors, this.miniStreamSectors, this.miniFatSectors)
   }
 
   /**
@@ -112,19 +113,19 @@ export class CFB {
 
   public header: Header
 
-  public sectors: DataView[]
+  public sectors!: DataView[]
 
-  public fatSectors: DataView[]
+  public fatSectors!: DataView[]
 
-  public miniStreamSectors: DataView[]
+  public miniStreamSectors!: DataView[]
 
-  public miniFatSectors: DataView[]
+  public miniFatSectors!: DataView[]
 
   //public fatChain: Map<number, DataView>
 
   //public miniFatChain: Map<number, DataView>
 
-  public directoryEntries: DirectoryEntry[]
+  public directoryEntries!: DirectoryEntry[]
 
   public root: DirectoryDescription
 }

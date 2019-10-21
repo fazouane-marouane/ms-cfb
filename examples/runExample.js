@@ -6,7 +6,7 @@ const rightpad = require('rightpad')
 const readFileSync = require('fs').readFileSync
 const {
   readFromNodeBuffer,
-} = require('../node-build')
+} = require('../dist/ms-cfb')
 const Benchmark = require('benchmark')
 
 function processFile(filename) {

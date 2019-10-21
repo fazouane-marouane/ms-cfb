@@ -1,6 +1,10 @@
+/**
+ * @jest-environment node
+ */
 import { readFromNodeBuffer } from '../src';
 import { readFileSync } from 'fs';
 import Benchmark from 'benchmark';
+import { resolve } from 'path';
 
 function processFile(filename: string) {
   const buffer = readFileSync(filename);
@@ -56,10 +60,10 @@ function processFile(filename: string) {
 }
 
 describe('benchmark', () => {
-  it.each([['dummy.doc'], ['message.msg'], ['examples/template.oft']])(
+  it.each([['dummy.doc'], ['message.msg'], ['template.oft']])(
     'works',
     filename => {
-      processFile(`./fixtures/${filename}`);
+      processFile(resolve(__dirname, `./fixtures/${filename}`));
     }
   );
 });

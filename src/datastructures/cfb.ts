@@ -13,7 +13,7 @@ import { Header } from './header'
 export class CFB {
   constructor(buffer: ArrayBuffer) {
     const header = this.header = new Header(new DataView(buffer))
-    header.check()
+    //header.check()
     this.buildSectors(buffer, header)
     this.buildFatSectors(header)
     this.buildDirectoryEntries(header)

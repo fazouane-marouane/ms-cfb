@@ -1,11 +1,10 @@
-version: 2
+version: 2.1
 jobs:
   build:
     working_directory: ~/practical
     docker:
       - image: node:12.12.0
     steps:
-      - checkout
       - run:
           name: version
           command: node --version && npm --version && yarn --version

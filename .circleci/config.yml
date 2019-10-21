@@ -14,7 +14,7 @@ jobs:
       - restore_cache:
           key: mscfb-dependency-cache-{{ checksum "ci-cache-key" }}
       - run:
-          name: yarn-install
+          name: install dependencies
           command: |
             export NODE_ENV="development"
             yarn install --frozen-lockfile

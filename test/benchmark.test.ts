@@ -59,7 +59,7 @@ describe('benchmark', () => {
   it.each([['dummy.doc'], ['message.msg'], ['examples/template.oft']])(
     'works',
     filename => {
-      processFile(filename);
+      processFile(`./fixtures/${filename}`);
     }
   );
 });

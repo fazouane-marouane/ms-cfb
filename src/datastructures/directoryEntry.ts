@@ -1,7 +1,6 @@
-import { childIdView, clsidView,
-  creationTimeView, directoryEntryNameLengthView, directoryEntryNameView, flagColorView,
-  leftSiblingIdView, modificationTimeView,
-  objectTypeView, rightSiblingIdView, startingSectorLocationView, stateBitsView,
+import { childIdView, directoryEntryNameLengthView, directoryEntryNameView,
+  leftSiblingIdView,
+  objectTypeView, rightSiblingIdView, startingSectorLocationView,
   streamSizeView } from './dataViews'
 
 /**

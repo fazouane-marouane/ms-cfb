@@ -10,7 +10,8 @@ export class FileDescription {
   constructor(
     public content: ArrayBuffer,
     public creationTime: Date | null = null,
-    public modificationTime: Date | null = null) {}
+    public modificationTime: Date | null = null
+  ) {}
 }
 
 /**
@@ -20,10 +21,10 @@ export class DirectoryDescription {
   /**
    * Matchs subdirectory names with subdirectory description
    */
-  public subdirectories: Map<string, DirectoryDescription> = new Map()
+  public subdirectories: Map<string, DirectoryDescription> = new Map();
 
   /**
    * Matchs file names with file descriptions
    */
-  public files: Map<string, FileDescription> = new Map()
+  public files: Map<string, FileDescription> = new Map();
 }

@@ -1,11 +1,11 @@
-import { CFB } from '../datastructures/cfb'
+import { CFB } from '../datastructures/cfb';
 
 /**
  *
  * @param buffer
  */
 export function readFromArrayBuffer(buffer: ArrayBuffer): CFB {
-  return new CFB(buffer)
+  return new CFB(buffer);
 }
 
 /**
@@ -16,19 +16,25 @@ export function readFromArrayBuffer(buffer: ArrayBuffer): CFB {
 export function readFromBlob(file: Blob): Promise<CFB> {
   // tslint:disable-next-line:promise-must-complete
   const arrayBufferPromise = new Promise<ArrayBuffer>(
-    (resolve: (value: ArrayBuffer) => void, reject: (reason: string) => void): void => {
-      const reader = new FileReader()
+    (
+      resolve: (value: ArrayBuffer) => void,
+      reject: (reason: string) => void
+    ): void => {
+      const reader = new FileReader();
       reader.onloadend = (event: ProgressEvent<FileReader>): void => {
-        resolve(event.target!.result! as ArrayBuffer)
-      }
+        resolve(event.target!.result! as ArrayBuffer);
+      };
       reader.onerror = (event: ProgressEvent<FileReader>): void => {
-        reject(event.target!.error!.message)
-      }
-      reader.readAsArrayBuffer(file)
-    })
+        reject(event.target!.error!.message);
+      };
+      reader.readAsArrayBuffer(file);
+    }
+  );
 
   // tslint:disable-next-line:no-unnecessary-callback-wrapper
-  return arrayBufferPromise.then((buffer: ArrayBuffer) => readFromArrayBuffer(buffer))
+  return arrayBufferPromise.then((buffer: ArrayBuffer) =>
+    readFromArrayBuffer(buffer)
+  );
 }
 
 /**
@@ -36,5 +42,5 @@ export function readFromBlob(file: Blob): Promise<CFB> {
  * @param file
  */
 export function readFromNodeBuffer(file: Buffer): CFB {
-  return readFromArrayBuffer(file.buffer)
+  return readFromArrayBuffer(file.buffer);
 }

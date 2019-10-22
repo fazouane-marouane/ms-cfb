@@ -4,8 +4,8 @@
  */
 export function assertIsDefined<T>(value: T | null | undefined): T {
   if (value === undefined || value === null) {
-    throw new Error(`assert ${value} is defined`)
+    throw new Error(`assert ${value} is defined`);
   }
 
-  return value
+  return value;
 }
